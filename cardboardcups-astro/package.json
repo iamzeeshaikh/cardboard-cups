@@ -1,0 +1,31 @@
+{
+  "name": "cardboardcups",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node scripts/images.mjs && astro build",
+    "preview": "node ./dist/server/entry.mjs",
+    "check": "astro check",
+    "validate": "node --experimental-strip-types scripts/validate.mjs",
+    "audit": "node scripts/audit.mjs",
+    "interact": "node scripts/interact.mjs",
+    "shots": "node scripts/shots.mjs",
+    "images": "node scripts/images.mjs"
+  },
+  "dependencies": {
+    "@astrojs/node": "^11.0.3",
+    "astro": "^7.1.6",
+    "nodemailer": "^9.0.3",
+    "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^26.1.2",
+    "@types/nodemailer": "^8.0.1",
+    "axe-core": "^4.12.1",
+    "playwright": "^1.62.1",
+    "typescript": "^6.0.3"
+  }
+}

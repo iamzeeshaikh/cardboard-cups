@@ -1,0 +1,29 @@
+{
+ "originals_downloaded": 123,
+ "download_failures": [
+  {
+   "path": "/wp-content/uploads/2025/12/Cup-Sleeves.jpg",
+   "error": "404"
+  }
+ ],
+ "product_images": 94,
+ "images_without_any_alt": [],
+ "alt_text_derived_from_filename": [
+  {
+   "product": "Cardboard Baking Cups",
+   "image": "/wp-content/uploads/2025/12/Wholesale-Baking-Cups.jpg",
+   "alt_used": "Wholesale Baking Cups"
+  },
+  {
+   "product": "Cardboard Baking Cups",
+   "image": "/wp-content/uploads/2025/12/Muffin-Baking-Cups.jpg",
+   "alt_used": "Muffin Baking Cups"
+  },
+  {
+   "product": "Cardboard Baking Cups",
+   "image": "/wp-content/uploads/2025/12/Disposable-Baking-Cup.jpg",
+   "alt_used": "Disposable Baking Cup"
+  }
+ ],
+ "alt_text_from_wordpress": 98
+}

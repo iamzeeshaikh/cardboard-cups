@@ -1,0 +1,340 @@
+---
+import { NAV, LOGO, ANNOUNCEMENT, CTA } from '../data/site';
+import SmartImage from './SmartImage.astro';
+
+const path = Astro.url.pathname;
+const isCurrent = (href: string) =>
+  href === '/' ? path === '/' : path === href || path.startsWith(href);
+---
+
+<header class="header">
+  {/* Inside <header> so every region of the page sits within a landmark. */}
+  <div class="announce">
+    <div class="announce__track">
+      <span>
+        {ANNOUNCEMENT.text} <a href={ANNOUNCEMENT.href}>{ANNOUNCEMENT.linkText}</a>
+      </span>
+    </div>
+  </div>
+
+  <div class="container header__inner">
+    <a class="header__logo" href="/" aria-label="Cardboard Cups — home">
+      <SmartImage
+        src={LOGO.src}
+        alt={LOGO.alt}
+        loading="eager"
+        fetchpriority="high"
+        sizes="239px"
+      />
+    </a>
+
+    {/* On narrow screens the quote CTA stays in the bar, as it does on the live site. */}
+    <a class="btn btn--primary btn--sm header__cta" href={CTA.quote.href}>{CTA.quote.label}</a>
+
+    <button
+      class="header__toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="primary-nav"
+      data-menu-toggle
+    >
+      <span class="header__bars" aria-hidden="true"></span>
+      <span class="visually-hidden">Menu</span>
+    </button>
+
+    <nav id="primary-nav" class="nav" aria-label="Primary">
+      <ul class="nav__list">
+        {
+          NAV.map((item) => (
+            <li class={`nav__item${item.children ? ' nav__item--has-children' : ''}`}>
+              <a
+                class="nav__link"
+                href={item.href}
+                aria-current={isCurrent(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+              {item.children && (
+                <>
+                  <button
+                    class="nav__disclosure"
+                    type="button"
+                    aria-expanded="false"
+                    data-submenu-toggle
+                  >
+                    <span class="visually-hidden">Show {item.label} products</span>
+                    <svg viewBox="0 0 10 6" width="10" height="6" aria-hidden="true">
+                      <path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" />
+                    </svg>
+                  </button>
+                  <ul class="submenu">
+                    {item.children.map((child) => (
+                      <li>
+                        <a
+                          href={child.href}
+                          aria-current={path === child.href ? 'page' : undefined}
+                        >
+                          {child.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </li>
+          ))
+        }
+        <li class="nav__item nav__item--cta">
+          <a class="btn btn--primary btn--sm" href={CTA.quote.href}>{CTA.quote.label}</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .announce {
+    background: var(--peach);
+    /* Dark on peach: white text here measured 1.9:1 against #ECAE85. */
+    color: var(--ink);
+    font-size: var(--fs-small);
+    overflow: hidden;
+  }
+  .announce__track {
+    display: flex;
+    white-space: nowrap;
+    padding: 9px 0;
+    animation: marquee 26s linear infinite;
+  }
+  .announce__track span { padding-inline: 3vw; }
+  .announce a { color: var(--ink); font-weight: 700; text-decoration: underline; }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+  }
+  /* A moving banner is a vestibular trigger — hold it still when asked. */
+  @media (prefers-reduced-motion: reduce) {
+    .announce__track {
+      animation: none;
+      justify-content: center;
+      white-space: normal;
+      text-align: center;
+    }
+  }
+
+  .header {
+    position: relative;
+    z-index: 40;
+    background: var(--white);
+    box-shadow: 0 1px 0 rgb(0 0 0 / 6%);
+  }
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 84px;
+  }
+  .header__logo { display: inline-flex; flex: none; }
+  .header__logo :global(img) { width: 160px; height: auto; }
+
+  /* Bar CTA is mobile-only; the desktop one lives at the end of the nav list. */
+  .header__cta { display: none; margin-left: auto; }
+
+  .header__toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  .header__bars,
+  .header__bars::before,
+  .header__bars::after {
+    display: block;
+    width: 20px;
+    height: 2px;
+    margin-inline: auto;
+    background: var(--ink);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  .header__bars { position: relative; }
+  .header__bars::before,
+  .header__bars::after { content: ''; position: absolute; left: 0; }
+  .header__bars::before { top: -6px; }
+  .header__bars::after { top: 6px; }
+  [aria-expanded='true'] .header__bars { background: transparent; }
+  [aria-expanded='true'] .header__bars::before { transform: translateY(6px) rotate(45deg); }
+  [aria-expanded='true'] .header__bars::after { transform: translateY(-6px) rotate(-45deg); }
+
+  .nav__list {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .nav__item { position: relative; margin: 0; }
+  .nav__link {
+    display: inline-block;
+    padding: 10px 12px;
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav__link:hover { color: var(--peach-text); }
+  .nav__link[aria-current='page'] {
+    color: var(--peach-text);
+    box-shadow: inset 0 -2px 0 var(--peach);
+  }
+
+  .nav__disclosure {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    margin-left: -6px;
+    color: var(--ink);
+    background: none;
+    border: 0;
+    cursor: pointer;
+    line-height: 0;
+  }
+  .nav__disclosure svg { transition: transform 0.2s ease; }
+  .nav__disclosure[aria-expanded='true'] svg { transform: rotate(180deg); }
+
+  .submenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 30;
+    display: none;
+    min-width: 268px;
+    margin: 0;
+    padding: 8px 0;
+    list-style: none;
+    background: var(--white);
+    border: 1px solid var(--card-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .submenu li { margin: 0; }
+  .submenu a {
+    display: block;
+    padding: 9px 18px;
+    font-size: var(--fs-small);
+    color: var(--body);
+    text-decoration: none;
+  }
+  .submenu a:hover,
+  .submenu a[aria-current='page'] { background: var(--card-bg); color: var(--peach-text); }
+
+  /* The disclosure button is the source of truth on every device; hover is a
+     convenience for desktop pointers only. Both selectors resolve to
+     `display: block` so neither can out-specify the other. */
+  @media (hover: hover) and (min-width: 1025px) {
+    .nav__item--has-children:hover .submenu { display: block; }
+  }
+  .submenu[data-open] { display: block; }
+
+  @media (max-width: 1024px) {
+    .header__cta { display: inline-flex; }
+    .header__toggle { display: block; }
+    .header__inner { gap: 12px; }
+    .nav__item--cta { display: none; }
+    .nav {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      display: none;
+      max-height: calc(100vh - 84px);
+      overflow-y: auto;
+      background: var(--white);
+      border-top: 1px solid var(--card-line);
+      box-shadow: var(--shadow);
+    }
+    .nav[data-open] { display: block; }
+    .nav__list {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: 8px var(--gutter) 20px;
+    }
+    .nav__item { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+    .nav__link { flex: 1; padding: 13px 0; }
+    .nav__disclosure { width: 44px; height: 44px; margin: 0; }
+    .submenu {
+      position: static;
+      order: 3;
+      width: 100%;
+      border: 0;
+      border-left: 2px solid var(--peach);
+      border-radius: 0;
+      box-shadow: none;
+      padding: 0 0 8px 14px;
+    }
+    .submenu[data-open] { display: block; }
+    .nav__item--cta { padding-top: 14px; }
+    .nav__item--cta .btn { width: 100%; }
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const nav = document.getElementById('primary-nav');
+
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    nav?.toggleAttribute('data-open', !open);
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-submenu-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const open = btn.getAttribute('aria-expanded') === 'true';
+      const menu = btn.parentElement?.querySelector('.submenu');
+      document.querySelectorAll('[data-submenu-toggle]').forEach((other) => {
+        if (other !== btn) {
+          other.setAttribute('aria-expanded', 'false');
+          other.parentElement?.querySelector('.submenu')?.removeAttribute('data-open');
+        }
+      });
+      btn.setAttribute('aria-expanded', String(!open));
+      menu?.toggleAttribute('data-open', !open);
+    });
+  });
+
+  // Escape closes whatever is open and returns focus to the control that opened it.
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const openSub = document.querySelector<HTMLButtonElement>('[data-submenu-toggle][aria-expanded="true"]');
+    if (openSub) {
+      openSub.setAttribute('aria-expanded', 'false');
+      openSub.parentElement?.querySelector('.submenu')?.removeAttribute('data-open');
+      openSub.focus();
+      return;
+    }
+    if (toggle?.getAttribute('aria-expanded') === 'true') {
+      toggle.setAttribute('aria-expanded', 'false');
+      nav?.removeAttribute('data-open');
+      toggle.focus();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!(e.target instanceof Node)) return;
+    if (nav?.contains(e.target) || toggle?.contains(e.target)) return;
+    document.querySelectorAll('[data-submenu-toggle][aria-expanded="true"]').forEach((btn) => {
+      btn.setAttribute('aria-expanded', 'false');
+      btn.parentElement?.querySelector('.submenu')?.removeAttribute('data-open');
+    });
+  });
+</script>

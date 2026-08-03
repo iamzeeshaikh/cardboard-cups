@@ -1,0 +1,166 @@
+---
+import { FOOTER, CONTACT, LOGO, SOCIAL } from '../data/site';
+import SmartImage from './SmartImage.astro';
+import manifest from '../data/images.json';
+
+const sizes = manifest as Record<string, { width: number; height: number }>;
+const pay = sizes[FOOTER.paymentImage];
+---
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div class="footer__brand">
+      <a href="/" aria-label="Cardboard Cups — home">
+        <SmartImage src={LOGO.src} alt={LOGO.alt} sizes="180px" />
+      </a>
+      <p>{FOOTER.tagline}</p>
+      <ul class="footer__social">
+        {
+          SOCIAL.map((s) => (
+            <li>
+              <a href={s.href} rel="noopener noreferrer nofollow" target="_blank" class={`social social--${s.name.toLowerCase()}`}>
+                <span class="visually-hidden">{s.name}</span>
+                <span aria-hidden="true">{s.name.charAt(0)}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <nav class="footer__col" aria-labelledby="footer-quick">
+      <h2 class="footer__heading" id="footer-quick">Quick Links</h2>
+      <ul>
+        {FOOTER.quickLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-labelledby="footer-company">
+      <h2 class="footer__heading" id="footer-company">Company</h2>
+      <ul>
+        {FOOTER.company.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="footer__col">
+      <h2 class="footer__heading">Contact Us</h2>
+      <ul class="footer__contact">
+        <li>
+          <span class="footer__icon" aria-hidden="true">✆</span>
+          <a href={CONTACT.phoneHref}>{CONTACT.phone}</a>
+        </li>
+        <li>
+          <span class="footer__icon" aria-hidden="true">✉</span>
+          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+        </li>
+        <li>
+          <span class="footer__icon" aria-hidden="true">⌖</span>
+          <address>{CONTACT.addressLines.join(' ')}</address>
+        </li>
+      </ul>
+    </div>
+
+    <ul class="footer__gallery">
+      {
+        FOOTER.gallery.map((src) => (
+          <li>
+            <SmartImage src={src} alt="" sizes="120px" ratio="1/1" class="footer__thumb" />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="footer__bar">
+    <div class="container footer__bar-inner">
+      <p>{FOOTER.copyright}</p>
+      <img
+        src={FOOTER.paymentImage}
+        alt="Accepted payment methods: PayPal, Mastercard, Visa, Maestro and American Express"
+        width={pay?.width}
+        height={pay?.height}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer { background: var(--peach); color: var(--ink); }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.3fr 1fr;
+    gap: 30px;
+    padding-block: 52px 40px;
+  }
+  .footer__brand :global(img) { width: 150px; height: auto; }
+  .footer__brand p { margin: 16px 0; font-size: var(--fs-small); max-width: 30ch; }
+
+  .footer__heading { margin: 0 0 16px; font-size: 22px; font-weight: 700; color: var(--ink); }
+
+  .footer__col ul { margin: 0; padding: 0; list-style: none; }
+  .footer__col li { margin-bottom: 10px; }
+  .footer__col a { color: var(--ink); text-decoration: none; }
+  .footer__col a:hover { text-decoration: underline; }
+
+  .footer__contact li { display: flex; gap: 10px; align-items: flex-start; }
+  .footer__icon { flex: none; line-height: 1.6; }
+  .footer__contact address { font-style: normal; }
+
+  .footer__social { display: flex; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .footer__social li { margin: 0; }
+  .social {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: var(--white);
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+  }
+  .social--facebook { background: #1877f2; }
+  .social--twitter { background: #1da1f2; }
+  .social--youtube { background: #ff0000; }
+
+  .footer__gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    align-content: start;
+  }
+  .footer__gallery li { margin: 0; }
+  .footer__gallery :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+  }
+
+  .footer__bar { background: var(--bar); color: var(--white); }
+  .footer__bar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-block: 16px;
+  }
+  .footer__bar p { margin: 0; font-size: var(--fs-small); }
+  .footer__bar img { width: 200px; height: auto; }
+
+  @media (max-width: 1024px) {
+    .footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .footer__gallery { grid-column: 1 / -1; grid-template-columns: repeat(6, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .footer__grid { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+    .footer__gallery { grid-template-columns: repeat(3, 1fr); }
+    .footer__bar-inner { flex-direction: column; text-align: center; }
+  }
+</style>

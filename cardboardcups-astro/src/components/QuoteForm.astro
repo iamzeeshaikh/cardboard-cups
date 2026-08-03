@@ -1,0 +1,248 @@
+---
+/**
+ * The "Let's Connect" enquiry form.
+ *  - compact: the sidebar/hero card, matching the live site's four fields
+ *  - full:    the quote page, adding phone and artwork upload
+ * Works without JavaScript (normal POST); JS upgrades it to inline feedback.
+ */
+interface Props {
+  variant?: 'compact' | 'full';
+  product?: string;
+  heading?: string;
+  id?: string;
+}
+
+const { variant = 'compact', product = '', heading = "Let's Connect", id = 'quote' } = Astro.props;
+const full = variant === 'full';
+const uid = (n: string) => `${id}-${n}`;
+---
+
+<div class={`qf qf--${variant}`}>
+  <h2 class="qf__title">{heading}</h2>
+
+  <form
+    class="qf__form"
+    method="POST"
+    action="/api/quote/"
+    enctype="multipart/form-data"
+    novalidate
+    data-quote-form
+  >
+    <input type="hidden" name="source" value={Astro.url.pathname} />
+    {/* Honeypot: a real person never sees this, bots fill it in. */}
+    <div class="qf__hp" aria-hidden="true">
+      <label for={uid('company-url')}>Leave this field empty</label>
+      <input id={uid('company-url')} name="company_url" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div class="qf__field">
+      <label for={uid('name')}>Name <span class="qf__req" aria-hidden="true">*</span></label>
+      <input id={uid('name')} name="name" type="text" placeholder="Name" required autocomplete="name" maxlength="120" />
+    </div>
+
+    <div class="qf__field">
+      <label for={uid('email')}>Email <span class="qf__req" aria-hidden="true">*</span></label>
+      <input id={uid('email')} name="email" type="email" placeholder="Email" required autocomplete="email" maxlength="180" />
+    </div>
+
+    {
+      full && (
+        <div class="qf__field">
+          <label for={uid('phone')}>Phone</label>
+          <input id={uid('phone')} name="phone" type="tel" placeholder="Phone" autocomplete="tel" maxlength="40" />
+        </div>
+      )
+    }
+
+    <div class="qf__field">
+      <label for={uid('product')}>Product</label>
+      <input id={uid('product')} name="product" type="text" placeholder="Product" value={product} maxlength="160" />
+    </div>
+
+    <div class="qf__field">
+      <label for={uid('message')}>Message <span class="qf__req" aria-hidden="true">*</span></label>
+      <textarea id={uid('message')} name="message" placeholder="Message" required rows={full ? 6 : 4} maxlength="4000"></textarea>
+    </div>
+
+    {
+      full && (
+        <div class="qf__field">
+          <label for={uid('artwork')}>Artwork (optional)</label>
+          <input
+            id={uid('artwork')}
+            name="artwork"
+            type="file"
+            accept=".pdf,.png,.jpg,.jpeg,.webp,.ai,.eps,.svg"
+            aria-describedby={uid('artwork-help')}
+          />
+          <p class="qf__help" id={uid('artwork-help')}>
+            PDF, PNG, JPG, WebP, AI, EPS or SVG. Maximum 8&nbsp;MB.
+          </p>
+        </div>
+      )
+    }
+
+    <button class="btn btn--primary btn--block" type="submit">Submit</button>
+
+    <p class="qf__status" data-quote-status role="status" aria-live="polite"></p>
+    <noscript><p class="qf__help">Your enquiry will be sent and you will land on a confirmation page.</p></noscript>
+  </form>
+</div>
+
+<style>
+  .qf {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 26px 24px 28px;
+    box-shadow: var(--shadow);
+  }
+  .qf--full { border: 1px solid var(--card-line); }
+  .qf__title {
+    margin: 0 0 18px;
+    font-size: 26px;
+    font-weight: 600;
+    text-align: center;
+    color: var(--ink);
+  }
+  .qf__field { margin-bottom: 14px; }
+  .qf__field label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .qf__req { color: var(--link); }
+  .qf__field input,
+  .qf__field textarea {
+    width: 100%;
+    padding: 11px 12px;
+    font: inherit;
+    font-size: var(--fs-small);
+    color: var(--body);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  .qf__field textarea { resize: vertical; min-height: 92px; }
+  .qf__field input::placeholder,
+  .qf__field textarea::placeholder { color: #9b9b9b; }
+  .qf__field [aria-invalid='true'] { border-color: var(--link); }
+
+  .qf__help { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+  .qf__error { margin: 5px 0 0; font-size: 13px; color: var(--link); font-weight: 600; }
+
+  /* Off-screen rather than display:none so scripted bots still see a real field. */
+  .qf__hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .qf__status:empty { display: none; }
+  .qf__status {
+    margin: 14px 0 0;
+    padding: 11px 13px;
+    border-radius: 6px;
+    font-size: var(--fs-small);
+    font-weight: 600;
+  }
+  .qf__status[data-state='ok'] { background: #e8f6f0; color: #14634a; border: 1px solid var(--mint); }
+  .qf__status[data-state='error'] { background: #fdecf1; color: #a01041; border: 1px solid #f3b9cc; }
+
+  .qf .btn { margin-top: 4px; }
+</style>
+
+<script>
+  const MAX_UPLOAD = 8 * 1024 * 1024;
+
+  document.querySelectorAll<HTMLFormElement>('[data-quote-form]').forEach((form) => {
+    const status = form.querySelector<HTMLParagraphElement>('[data-quote-status]');
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+
+    const setError = (field: HTMLInputElement | HTMLTextAreaElement, message: string | null) => {
+      const id = `${field.id}-error`;
+      let node = document.getElementById(id);
+      if (!message) {
+        field.removeAttribute('aria-invalid');
+        field.removeAttribute('aria-describedby');
+        node?.remove();
+        return;
+      }
+      field.setAttribute('aria-invalid', 'true');
+      if (!node) {
+        node = document.createElement('p');
+        node.id = id;
+        node.className = 'qf__error';
+        field.insertAdjacentElement('afterend', node);
+      }
+      node.textContent = message;
+      field.setAttribute('aria-describedby', id);
+    };
+
+    const validate = () => {
+      let firstBad: HTMLElement | null = null;
+      const check = (name: string, test: (v: string) => string | null) => {
+        const field = form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement | null;
+        if (!field) return;
+        const problem = test(field.value.trim());
+        setError(field, problem);
+        if (problem && !firstBad) firstBad = field;
+      };
+      check('name', (v) => (v.length < 2 ? 'Please enter your name.' : null));
+      check('email', (v) => (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? null : 'Please enter a valid email address.'));
+      check('message', (v) => (v.length < 10 ? 'Please tell us a little more (at least 10 characters).' : null));
+
+      const file = form.elements.namedItem('artwork') as HTMLInputElement | null;
+      if (file?.files?.length) {
+        const f = file.files[0];
+        setError(file, f.size > MAX_UPLOAD ? 'That file is larger than 8 MB.' : null);
+        if (f.size > MAX_UPLOAD && !firstBad) firstBad = file;
+      }
+      return firstBad;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      const bad = validate();
+      if (bad) {
+        e.preventDefault();
+        (bad as HTMLElement).focus();
+        return;
+      }
+      e.preventDefault();
+      if (!status || !submit) return;
+
+      submit.disabled = true;
+      const label = submit.textContent;
+      submit.textContent = 'Sending…';
+      status.removeAttribute('data-state');
+      status.textContent = '';
+
+      try {
+        const res = await fetch('/api/quote/', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.ok) {
+          // Only claim success once the server confirms the mail was accepted.
+          status.dataset.state = 'ok';
+          status.textContent = data.message || 'Thank you — your enquiry has been sent.';
+          form.reset();
+        } else {
+          status.dataset.state = 'error';
+          status.textContent = data.message || 'Sorry, your enquiry could not be sent. Please email us instead.';
+        }
+      } catch {
+        status.dataset.state = 'error';
+        status.textContent = 'Network problem — please try again, or email info@cardboardcups.com.';
+      } finally {
+        submit.disabled = false;
+        submit.textContent = label;
+      }
+    });
+  });
+</script>

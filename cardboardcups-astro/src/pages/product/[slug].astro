@@ -1,0 +1,283 @@
+---
+import Base from '../../layouts/Base.astro';
+import QuoteForm from '../../components/QuoteForm.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import SmartImage from '../../components/SmartImage.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import CtaSection from '../../components/CtaSection.astro';
+import products from '../../data/products.json';
+import categories from '../../data/categories.json';
+import { CTA } from '../../data/site';
+import { breadcrumbs, faqPage, product as productSchema } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { slug: p.slug }, props: { product: p } }));
+}
+
+const { product } = Astro.props;
+const bySlug = new Map(products.map((p) => [p.slug, p]));
+const category = categories.find((c) => c.slug === product.category);
+const related = product.related.map((s) => bySlug.get(s)!).filter(Boolean);
+
+const crumbs = [
+  { label: 'Home', href: '/' },
+  ...(category ? [{ label: category.name, href: category.url }] : []),
+  { label: product.name },
+];
+
+// One Product graph only — the WordPress build emitted two, with conflicting
+// invented ratings. Description is the visible short description.
+const schema = [
+  productSchema({
+    name: product.name,
+    url: product.url,
+    sku: product.sku,
+    brand: product.brand,
+    description: product.shortDescription[0] ?? product.seo.description ?? '',
+    images: product.images,
+    inStock: product.inStock,
+  }),
+  breadcrumbs(crumbs),
+  faqPage(product.faqs),
+];
+
+const gallery = product.images;
+const hero = gallery[0];
+const specs = product.specifications;
+---
+
+<Base
+  title={product.seo.title ?? `${product.name} | Cardboard Cups`}
+  description={product.seo.description ?? product.shortDescription[0] ?? ''}
+  path={product.url}
+  ogImage={product.seo.ogImage}
+  ogType="product"
+  schema={schema}
+>
+  <Breadcrumbs items={crumbs} />
+
+  <div class="container product">
+    <div class="product__gallery">
+      {
+        hero && (
+          <SmartImage
+            src={hero.src}
+            alt={hero.alt}
+            sizes="(max-width: 900px) 92vw, 440px"
+            loading="eager"
+            fetchpriority="high"
+            ratio="1/1"
+            class="product__hero"
+          />
+        )
+      }
+      {
+        gallery.length > 1 && (
+          <ul class="product__thumbs">
+            {gallery.map((img) => (
+              <li>
+                <SmartImage src={img.src} alt={img.alt} sizes="110px" ratio="1/1" />
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+
+    <div class="product__summary">
+      <h1>{product.name}</h1>
+      {product.shortDescription.map((p) => <p>{p}</p>)}
+
+      <p class="product__stock">
+        {product.inStock ? 'Available in Stock' : 'Made to order'}
+      </p>
+
+      {/* No checkout exists on this site, so the buying control is a quote request. */}
+      <div class="product__actions">
+        <a class="btn btn--primary" href={`${CTA.quote.href}?product=${encodeURIComponent(product.name)}`}>
+          Get Free Quote
+        </a>
+        <a class="btn btn--outline" href="/contact-us/">Request Bulk Pricing</a>
+      </div>
+
+      <dl class="product__meta">
+        <div><dt>SKU</dt><dd>{product.sku}</dd></div>
+        {category && (
+          <div><dt>Category</dt><dd><a href={category.url}>{category.name}</a></dd></div>
+        )}
+        <div><dt>Brand</dt><dd>{product.brand}</dd></div>
+      </dl>
+    </div>
+
+    <aside class="product__aside">
+      <QuoteForm id="product" product={product.name} />
+    </aside>
+  </div>
+
+  <div class="container">
+    <div class="tabs" data-tabs>
+      <div class="tabs__list" role="tablist" aria-label="Product information">
+        <button id="tab-description" role="tab" aria-controls="panel-description" aria-selected="true" class="tabs__tab">Description</button>
+        {specs && <button id="tab-specifications" role="tab" aria-controls="panel-specifications" aria-selected="false" tabindex="-1" class="tabs__tab">Specifications</button>}
+        {product.faqs.length > 0 && <button id="tab-faqs" role="tab" aria-controls="panel-faqs" aria-selected="false" tabindex="-1" class="tabs__tab">Faqs</button>}
+      </div>
+
+      <section id="panel-description" role="tabpanel" aria-labelledby="tab-description" class="tabs__panel" tabindex="0">
+        <h2 class="tabs__heading">Description</h2>
+        <div class="prose" set:html={product.description} />
+      </section>
+
+      {
+        specs && (
+          <section id="panel-specifications" role="tabpanel" aria-labelledby="tab-specifications" class="tabs__panel" tabindex="0" hidden>
+            <h2 class="tabs__heading">Specifications</h2>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>{specs.headers.map((h) => <th scope="col">{h}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {specs.rows.map((row) => (
+                    <tr>
+                      {row.map((cell, i) =>
+                        i === 0 ? <th scope="row">{cell}</th> : <td>{cell}</td>,
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )
+      }
+
+      {
+        product.faqs.length > 0 && (
+          <section id="panel-faqs" role="tabpanel" aria-labelledby="tab-faqs" class="tabs__panel" tabindex="0" hidden>
+            <h2 class="tabs__heading">Faqs</h2>
+            <Faq items={product.faqs} />
+          </section>
+        )
+      }
+    </div>
+  </div>
+
+  {
+    related.length > 0 && (
+      <section class="section">
+        <div class="container">
+          <h2 class="section__title">Related Products</h2>
+          <div class="grid grid--4">
+            {related.map((p) => (
+              <ProductCard href={p.url} name={p.name} image={p.images[0]} headingLevel={3} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <CtaSection />
+</Base>
+
+<style>
+  .product {
+    display: grid;
+    grid-template-columns: 400px minmax(0, 1fr) 360px;
+    gap: 40px;
+    padding-block: 40px;
+    align-items: start;
+  }
+  .product__hero :global(img) {
+    width: 100%; height: auto; display: block;
+    border: 1px solid var(--card-line); border-radius: 4px; object-fit: cover;
+  }
+  .product__thumbs {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    margin: 10px 0 0; padding: 0; list-style: none;
+  }
+  .product__thumbs li { margin: 0; }
+  .product__thumbs :global(img) {
+    width: 100%; height: auto; display: block; object-fit: cover;
+    border: 1px solid var(--card-line); border-radius: 3px;
+  }
+
+  .product__summary h1 { font-size: 30px; }
+  .product__summary p { font-size: var(--fs-small); }
+  .product__stock { color: var(--peach-text); font-weight: 700; }
+  .product__actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 22px 0; }
+
+  .product__meta { margin: 0; font-size: var(--fs-small); }
+  .product__meta > div { display: flex; gap: 8px; margin-bottom: 4px; }
+  .product__meta dt { font-weight: 700; color: var(--ink); }
+  .product__meta dd { margin: 0; }
+  .product__meta a { color: var(--peach-text); }
+
+  .product__aside { position: sticky; top: 20px; }
+
+  @media (max-width: 1100px) {
+    .product { grid-template-columns: 340px minmax(0, 1fr); }
+    .product__aside { grid-column: 1 / -1; position: static; max-width: 480px; }
+  }
+  @media (max-width: 760px) {
+    .product { grid-template-columns: minmax(0, 1fr); gap: 26px; padding-block: 26px; }
+    .product__aside { max-width: none; }
+  }
+
+  .tabs { margin-bottom: 30px; }
+  .tabs__list {
+    display: flex; flex-wrap: wrap; gap: 2px;
+    border-bottom: 1px solid var(--line);
+  }
+  .tabs__tab {
+    padding: 11px 18px;
+    font: inherit; font-size: var(--fs-small); font-weight: 600;
+    color: var(--body);
+    background: var(--card-bg);
+    border: 1px solid var(--line); border-bottom: 0;
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+  }
+  .tabs__tab[aria-selected='true'] { background: var(--white); color: var(--ink); position: relative; top: 1px; }
+  .tabs__panel { padding-top: 28px; }
+  .tabs__panel:focus-visible { outline-offset: -3px; }
+  .tabs__heading { font-size: var(--fs-h2); }
+
+  /* Without JS every panel stays visible, so no content is ever unreachable. */
+  .tabs:not([data-enhanced]) .tabs__list { display: none; }
+  .tabs:not([data-enhanced]) .tabs__panel[hidden] { display: block; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    if (tabs.length < 2) return;
+    root.setAttribute('data-enhanced', '');
+
+    const select = (next: HTMLButtonElement, focus = true) => {
+      tabs.forEach((tab) => {
+        const on = tab === next;
+        tab.setAttribute('aria-selected', String(on));
+        tab.tabIndex = on ? 0 : -1;
+        const panel = document.getElementById(tab.getAttribute('aria-controls')!);
+        panel?.toggleAttribute('hidden', !on);
+      });
+      if (focus) next.focus();
+    };
+
+    tabs.forEach((tab) => tab.addEventListener('click', () => select(tab, false)));
+
+    root.querySelector('[role="tablist"]')?.addEventListener('keydown', (e) => {
+      const evt = e as KeyboardEvent;
+      const i = tabs.indexOf(document.activeElement as HTMLButtonElement);
+      if (i < 0) return;
+      const map: Record<string, number> = {
+        ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1,
+      };
+      if (!(evt.key in map)) return;
+      evt.preventDefault();
+      select(tabs[(map[evt.key] + tabs.length) % tabs.length]);
+    });
+  });
+</script>

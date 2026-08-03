@@ -1,0 +1,63 @@
+---
+/**
+ * Serves pre-generated WebP renditions with the original WordPress file as the
+ * fallback, so every previously indexed image URL still resolves.
+ * Intrinsic width/height always render, which is what keeps CLS at zero.
+ */
+import manifest from '../data/images.json';
+
+interface Props {
+  src: string;
+  alt: string;
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  class?: string;
+  /** Display box ratio, e.g. "1/1". Falls back to the file's own ratio. */
+  ratio?: string;
+}
+
+const {
+  src,
+  alt,
+  sizes = '(max-width: 768px) 100vw, 570px',
+  loading = 'lazy',
+  fetchpriority,
+  class: className,
+  ratio,
+} = Astro.props;
+
+const info = (manifest as Record<string, { width: number; height: number; srcset: { url: string; w: number }[] }>)[src];
+const srcset = info?.srcset?.map((s) => `${s.url} ${s.w}w`).join(', ');
+const decoding = loading === 'eager' ? 'sync' : 'async';
+---
+
+{
+  srcset ? (
+    <picture class={className}>
+      <source type="image/webp" srcset={srcset} sizes={sizes} />
+      <img
+        src={src}
+        alt={alt}
+        width={info.width}
+        height={info.height}
+        loading={loading}
+        decoding={decoding}
+        fetchpriority={fetchpriority}
+        style={ratio ? `aspect-ratio:${ratio}` : undefined}
+      />
+    </picture>
+  ) : (
+    <img
+      class={className}
+      src={src}
+      alt={alt}
+      width={info?.width}
+      height={info?.height}
+      loading={loading}
+      decoding={decoding}
+      fetchpriority={fetchpriority}
+      style={ratio ? `aspect-ratio:${ratio}` : undefined}
+    />
+  )
+}

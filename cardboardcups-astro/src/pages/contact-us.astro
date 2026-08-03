@@ -1,0 +1,64 @@
+---
+import Base from '../layouts/Base.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import CtaSection from '../components/CtaSection.astro';
+import { CONTACT } from '../data/site';
+import { breadcrumbs, organization } from '../lib/schema';
+
+const crumbs = [{ label: 'Home', href: '/' }, { label: 'Contact Us' }];
+---
+<Base
+  title="Contact Us - Cardboard Cups"
+  description="Contact Cardboard Cups for custom quotes, bulk pricing and product advice. Call (503) 358-0443 or email info@cardboardcups.com — we reply within 24 hours."
+  path="/contact-us/"
+  ogType="article"
+  schema={[organization(), breadcrumbs(crumbs)]}
+>
+  <Breadcrumbs items={crumbs} />
+
+  <section class="section">
+    <div class="container contact">
+      <div>
+        <h1>Contact Us</h1>
+        <h2 class="contact__lead">Ready to Think Outside the Box? Let's Get Started.</h2>
+        <p>It’s simple, speedy and free to request a quote from us – just let us know what you’re looking for, and our experienced team will come back to you within 24 hours or less.</p>
+
+        <ul class="contact__list">
+          <li>
+            <span class="contact__icon" aria-hidden="true">✆</span>
+            <a href={CONTACT.phoneHref}>{CONTACT.phone}</a>
+          </li>
+          <li>
+            <span class="contact__icon" aria-hidden="true">✉</span>
+            <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+          </li>
+          <li>
+            <span class="contact__icon" aria-hidden="true">⌖</span>
+            <address>{CONTACT.addressLines.join(', ')}</address>
+          </li>
+        </ul>
+      </div>
+
+      <div class="contact__form">
+        <QuoteForm id="contact" variant="full" />
+      </div>
+    </div>
+  </section>
+
+  <CtaSection />
+</Base>
+
+<style>
+  .contact { display: grid; grid-template-columns: minmax(0, 1fr) 460px; gap: 48px; align-items: start; }
+  .contact__lead { font-size: 26px; margin-top: 18px; }
+  .contact__list { margin: 26px 0 0; padding: 0; list-style: none; }
+  .contact__list li { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
+  .contact__icon {
+    flex: none; display: grid; place-items: center; width: 32px; height: 32px;
+    background: var(--peach); color: var(--white); border-radius: 50%;
+  }
+  .contact__list a { color: var(--ink); }
+  .contact__list address { font-style: normal; }
+  @media (max-width: 900px) { .contact { grid-template-columns: minmax(0, 1fr); gap: 30px; } }
+</style>

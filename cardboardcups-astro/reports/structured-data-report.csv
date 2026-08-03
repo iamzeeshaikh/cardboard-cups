@@ -1,0 +1,30 @@
+url,new_schema,old_schema,parses,duplicate_product
+/,Organization + WebSite + FAQPage,Organization,yes,no
+/404/,,,yes,no
+/about-us/,BreadcrumbList,,yes,no
+/contact-us/,Organization + BreadcrumbList,,yes,no
+/get-free-quote/,BreadcrumbList,,yes,no
+/privacy-policy/,BreadcrumbList,,yes,no
+/product-category/baking-cups/,BreadcrumbList + ItemList + FAQPage,ItemList,yes,no
+/product-category/cup-sleeves/,BreadcrumbList + ItemList + FAQPage,ItemList,yes,no
+/product-category/cup-types/,BreadcrumbList + ItemList + FAQPage,ItemList,yes,no
+/product/cardboard-baking-cups/,Product + BreadcrumbList + FAQPage,Product + Product,yes,no
+/product/cardboard-coffee-cups-with-lids/,Product + BreadcrumbList + FAQPage,Product,yes,no
+/product/cardboard-coffee-cups/,Product + BreadcrumbList + FAQPage,Product + Product,yes,no
+/product/cardboard-coffee-sleeves/,Product + BreadcrumbList + FAQPage,Product,yes,no
+/product/cardboard-cup-sleeves/,Product + BreadcrumbList + FAQPage,Product,yes,no
+/product/cardboard-cupcake-cups/,Product + BreadcrumbList + FAQPage,Product,yes,no
+/product/cardboard-cups-for-food/,Product + BreadcrumbList + FAQPage,Product,yes,no
+/product/cardboard-cups-for-hot-drinks/,Product + BreadcrumbList + FAQPage,Product,yes,no
+/product/cardboard-milkshake-cups/,Product + BreadcrumbList + FAQPage,Product,yes,no
+/product/cardboard-muffin-cups/,Product + BreadcrumbList + FAQPage,Product + Product,yes,no
+/product/cardboard-mugs/,Product + BreadcrumbList + FAQPage,Product + Product,yes,no
+/product/cardboard-soup-cups/,Product + BreadcrumbList + FAQPage,Product,yes,no
+/product/cardboard-tea-cups/,Product + BreadcrumbList + FAQPage,Product + Product,yes,no
+/product/christmas-cardboard-cups/,Product + BreadcrumbList + FAQPage,Product + Product,yes,no
+/product/corrugated-paper-cups/,Product + BreadcrumbList + FAQPage,Product,yes,no
+/product/disposable-cardboard-cups/,Product + BreadcrumbList + FAQPage,Product + Product,yes,no
+/product/small-cardboard-cups/,Product + BreadcrumbList + FAQPage,Product + Product,yes,no
+/product/white-cardboard-cups/,Product + BreadcrumbList + FAQPage,Product,yes,no
+/shop/,BreadcrumbList + ItemList,,yes,no
+/terms-conditions/,BreadcrumbList,,yes,no

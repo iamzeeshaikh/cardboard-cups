@@ -1,0 +1,53 @@
+---
+import Seo from '../components/Seo.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  ogImage?: string | null;
+  ogType?: 'website' | 'article' | 'product';
+  noindex?: boolean;
+  schema?: unknown[];
+}
+
+const { title, description, path, ogImage, ogType, noindex, schema } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Seo
+      title={title}
+      description={description}
+      path={path}
+      ogImage={ogImage}
+      ogType={ogType}
+      noindex={noindex}
+      schema={schema}
+    />
+    <link rel="icon" href="/wp-content/uploads/2026/01/cropped-Favicon.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/wp-content/uploads/2026/01/Favicon.png" />
+    <meta name="theme-color" content="#ECAE85" />
+    <link
+      rel="preload"
+      href="/fonts/nunito-sans-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to content</a>
+    <Header />
+    <main id="content">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

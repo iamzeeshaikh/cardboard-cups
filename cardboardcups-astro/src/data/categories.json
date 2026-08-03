@@ -1,0 +1,92 @@
+[
+ {
+  "slug": "baking-cups",
+  "name": "Baking Cups",
+  "url": "/product-category/baking-cups/",
+  "products": [
+   "cardboard-baking-cups",
+   "cardboard-cupcake-cups",
+   "cardboard-muffin-cups"
+  ],
+  "cardImage": {
+   "src": "/wp-content/uploads/2025/12/Muffin-Tray-Cupcake-Cups.jpg",
+   "alt": "Muffin Tray Cupcake Cups",
+   "title": "Muffin Tray Cupcake Cups",
+   "available": true
+  },
+  "heroImage": {
+   "src": "/wp-content/uploads/2025/12/Baking-Cups-Packaging.jpg",
+   "alt": "Baking Cups",
+   "title": "Baking Cups",
+   "available": true
+  },
+  "seo": {
+   "title": "Baking Cups For Muffins And Cupcakes | Cardboard Cups",
+   "description": "Baking cups for muffins, cupcakes, mini cakes, and bakery portions with custom design, custom quote, print options, and free delivery in USA.",
+   "focusKeyword": "Baking Cups"
+  }
+ },
+ {
+  "slug": "cup-sleeves",
+  "name": "Cup Sleeves",
+  "url": "/product-category/cup-sleeves/",
+  "products": [
+   "cardboard-coffee-sleeves",
+   "cardboard-cup-sleeves"
+  ],
+  "cardImage": {
+   "src": "/wp-content/uploads/2025/12/Heat-Protection-Cup-Sleeve.jpg",
+   "alt": "Heat Protection Cup Sleeve",
+   "title": "Heat Protection Cup Sleeve",
+   "available": true
+  },
+  "heroImage": {
+   "src": "/wp-content/uploads/2025/12/stackable-cup-sleeves.jpg",
+   "alt": "Cup Sleeves",
+   "title": "Cup Sleeves",
+   "available": true
+  },
+  "seo": {
+   "title": "Cup Sleeves For Hot Drink Cups | Cardboard Cups",
+   "description": "Cup sleeves for hot drink cups with better grip, heat comfort, custom design, custom quote, print options, and free delivery in USA.",
+   "focusKeyword": "Cup Sleeve"
+  }
+ },
+ {
+  "slug": "cup-types",
+  "name": "Cup Types",
+  "url": "/product-category/cup-types/",
+  "products": [
+   "small-cardboard-cups",
+   "cardboard-cups-for-hot-drinks",
+   "disposable-cardboard-cups",
+   "cardboard-cups-for-food",
+   "cardboard-soup-cups",
+   "cardboard-milkshake-cups",
+   "cardboard-coffee-cups",
+   "cardboard-coffee-cups-with-lids",
+   "cardboard-tea-cups",
+   "cardboard-mugs",
+   "corrugated-paper-cups",
+   "white-cardboard-cups",
+   "christmas-cardboard-cups"
+  ],
+  "cardImage": {
+   "src": "/wp-content/uploads/2025/12/Carry-Safe-White-Cups.jpg",
+   "alt": "Carry Safe White Cups",
+   "title": "Carry Safe White Cups",
+   "available": true
+  },
+  "heroImage": {
+   "src": "/wp-content/uploads/2025/12/Paperboard-Baking-Cups.jpg",
+   "alt": "Cup Types",
+   "title": "Cup Types",
+   "available": true
+  },
+  "seo": {
+   "title": "Cardboard Cups | All Cup Types | Eco-Friendly | Bulk Orders",
+   "description": "Shop all cardboard cup types for coffee, tea, soup & food. Hot & cold drinks. Custom printing. Wholesale pricing. Ships to USA, UK & Australia.",
+   "focusKeyword": "Cup Types"
+  }
+ }
+]

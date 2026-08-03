@@ -1,0 +1,325 @@
+---
+import Base from '../layouts/Base.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import ProductCard from '../components/ProductCard.astro';
+import SmartImage from '../components/SmartImage.astro';
+import Faq from '../components/Faq.astro';
+import CtaSection from '../components/CtaSection.astro';
+import products from '../data/products.json';
+import categories from '../data/categories.json';
+import {
+  HERO, INTRO, BENEFITS, RANGE, CATEGORIES_SECTION, AUDIENCE,
+  PRINTING, SHIPPING, SUSTAINABILITY, BULK, HOME_FAQ, BANDS_BACKGROUND,
+} from '../data/home';
+import { organization, website, faqPage } from '../lib/schema';
+
+const bySlug = new Map(products.map((p) => [p.slug, p]));
+const rangeItems = RANGE.slugs.map((s) => bySlug.get(s)!).filter(Boolean);
+
+const schema = [organization(), website(), faqPage(HOME_FAQ.items)];
+---
+
+<Base
+  title="Cardboard Cups | Custom Printed Cups, Small Cups, Wholesale"
+  description="Order cardboard cups at wholesale prices. Choose custom printed designs, small to large sizes, and reliable packaging for cafes, events etc"
+  path="/"
+  ogImage="/wp-content/uploads/2025/12/Sweet-Treat-Baking-Cups.jpg"
+  schema={schema}
+>
+  <section class="hero">
+    <div class="container hero__inner">
+      <div class="hero__copy">
+        <h1>{HERO.h1}</h1>
+        {HERO.intro.map((p) => <p set:html={p} />)}
+        <div class="hero__actions">
+          <a class="btn btn--primary" href={HERO.primary.href}>{HERO.primary.label}</a>
+          <a class="btn btn--outline btn--onHero" href={HERO.secondary.href}>{HERO.secondary.label}</a>
+        </div>
+      </div>
+      <div class="hero__form">
+        <QuoteForm id="hero" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split">
+      <SmartImage
+        src={INTRO.image}
+        alt={INTRO.imageAlt}
+        sizes="(max-width: 900px) 92vw, 520px"
+        loading="eager"
+        fetchpriority="high"
+        class="split__media"
+      />
+      <div>
+        <h2>{INTRO.h2}</h2>
+        {INTRO.body.map((p) => <p set:html={p} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">{BENEFITS.h2}</h2>
+      <ul class="feature-grid">
+        {
+          BENEFITS.items.map((item) => (
+            <li class="feature">
+              <span class="feature__icon" aria-hidden="true">✓</span>
+              <h3>{item.h3}</h3>
+              <p>{item.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">{RANGE.h2}</h2>
+      <div class="grid grid--4">
+        {
+          rangeItems.map((p) => (
+            <ProductCard href={p.url} name={p.name} image={p.images[0]} headingLevel={3} />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section__title">{CATEGORIES_SECTION.h2}</h2>
+      <div class="grid grid--3">
+        {
+          categories.map((c) => (
+            <article class="cat-card">
+              <a href={c.url}>
+                {c.cardImage && (
+                  <SmartImage
+                    src={c.cardImage.src}
+                    alt={c.cardImage.alt}
+                    sizes="(max-width: 640px) 90vw, 350px"
+                    ratio="4/3"
+                  />
+                )}
+                <h3>{c.name}</h3>
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split split--reverse">
+      <div>
+        <h2>{AUDIENCE.h2}</h2>
+        <ul class="checklist">
+          {
+            AUDIENCE.items.map((item) => (
+              <li>
+                <span class="checklist__mark" aria-hidden="true">✓</span>
+                <div>
+                  <h3>{item.h3}</h3>
+                  <p>{item.body}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <SmartImage
+        src={AUDIENCE.image}
+        alt={AUDIENCE.imageAlt}
+        sizes="(max-width: 900px) 92vw, 520px"
+        class="split__media"
+      />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split">
+      <SmartImage
+        src={PRINTING.image}
+        alt={PRINTING.imageAlt}
+        sizes="(max-width: 900px) 92vw, 520px"
+        class="split__media"
+      />
+      <div>
+        <h2>{PRINTING.h2}</h2>
+        <p>{PRINTING.lead}</p>
+        <p><strong>{PRINTING.listTitle}</strong></p>
+        <ul>{PRINTING.list.map((i) => <li>{i}</li>)}</ul>
+        <p>{PRINTING.closing}</p>
+        <a class="btn btn--primary" href={PRINTING.cta.href}>{PRINTING.cta.label}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container narrow">
+      <h2>{SHIPPING.h2}</h2>
+      <p>{SHIPPING.lead}</p>
+      <ul>{SHIPPING.list.map((i) => <li>{i}</li>)}</ul>
+      {SHIPPING.closing.map((p) => <p>{p}</p>)}
+    </div>
+  </section>
+
+  <section class="bands" style={`background-image: linear-gradient(rgb(0 0 0 / 55%), rgb(0 0 0 / 55%)), url('${BANDS_BACKGROUND}')`}>
+    <div class="container grid grid--2">
+      <div class="band-card">
+        <h2>{SUSTAINABILITY.h2}</h2>
+        <p>{SUSTAINABILITY.lead}</p>
+        <p><strong>{SUSTAINABILITY.listTitle}</strong></p>
+        <ul>{SUSTAINABILITY.list.map((i) => <li>{i}</li>)}</ul>
+        <p>{SUSTAINABILITY.closing}</p>
+      </div>
+      <div class="band-card">
+        <h2>{BULK.h2}</h2>
+        <p>{BULK.lead}</p>
+        <p><strong>{BULK.listTitle}</strong></p>
+        <ul>{BULK.list.map((i) => <li>{i}</li>)}</ul>
+        <a class="btn btn--primary" href={BULK.cta.href}>{BULK.cta.label}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split">
+      <SmartImage
+        src={HOME_FAQ.image}
+        alt={HOME_FAQ.imageAlt}
+        sizes="(max-width: 900px) 92vw, 480px"
+        class="split__media"
+      />
+      <div>
+        <h2>{HOME_FAQ.h2}</h2>
+        <Faq items={HOME_FAQ.items} />
+      </div>
+    </div>
+  </section>
+
+  <CtaSection />
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    color: var(--white);
+    background-color: #4a4038;
+    /* 87deg black -> grey overlay at 75%, matching the Elementor hero */
+    background-image: linear-gradient(87deg, rgb(10 10 10 / 75%) 43%, rgb(116 116 116 / 75%) 70%),
+      url('/wp-content/uploads/2025/12/Carry-Safe-White-Cups.jpg');
+    background-size: cover;
+    background-position: center;
+  }
+  .hero__inner {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    align-items: center;
+    gap: 48px;
+    min-height: 500px;
+    padding-block: 50px;
+  }
+  /* 630px is the measured width of the live hero heading at 1440px. */
+  .hero h1 { color: var(--white); max-width: 630px; }
+  .hero__copy p { max-width: 52ch; }
+  .hero__actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
+  .btn--onHero { background: transparent; color: var(--white); border-color: var(--peach); }
+  .btn--onHero:hover { background: var(--peach); color: var(--white); }
+  .hero__form { max-width: 400px; width: 100%; justify-self: end; }
+
+  @media (max-width: 900px) {
+    .hero__inner { grid-template-columns: minmax(0, 1fr); padding-block: 46px; gap: 32px; }
+    .hero__form { justify-self: stretch; max-width: none; }
+    .hero h1 { max-width: none; }
+  }
+
+  .section--tint { background: #fafafa; }
+  .narrow { max-width: 780px; }
+
+  .split {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: 46px;
+  }
+  .split__media :global(img),
+  .split__media:is(img) { width: 100%; height: auto; border-radius: 4px; display: block; }
+  @media (max-width: 900px) {
+    .split { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    .split--reverse > :first-child { order: 2; }
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .feature {
+    margin: 0;
+    padding: 26px 24px 28px;
+    background: var(--white);
+    box-shadow: 0 1px 6px rgb(0 0 0 / 4%);
+    border: 1px solid var(--card-line);
+    border-radius: 4px;
+  }
+  .feature__icon {
+    display: grid;
+    place-items: center;
+    width: 38px; height: 38px;
+    margin-bottom: 18px;
+    background: var(--peach);
+    color: var(--white);
+    border-radius: 50%;
+    font-size: 18px;
+  }
+  .feature h3 { font-size: 20px; }
+  .feature p { margin: 0; font-size: var(--fs-small); }
+  @media (max-width: 1024px) { .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .feature-grid { grid-template-columns: minmax(0, 1fr); } }
+
+  .cat-card {
+    background: var(--white);
+    border: 1px solid var(--card-line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .cat-card a { display: block; text-decoration: none; color: inherit; }
+  .cat-card :global(img) { width: 100%; height: auto; aspect-ratio: 4/3; object-fit: cover; display: block; }
+  .cat-card h3 { margin: 0; padding: 18px 14px; font-size: var(--fs-body); font-weight: 400; text-align: center; color: var(--body); }
+  .cat-card a:hover h3 { color: var(--peach-text); }
+
+  .checklist { margin: 0; padding: 0; list-style: none; }
+  .checklist li { display: flex; gap: 14px; margin-bottom: 18px; }
+  .checklist__mark {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 22px; height: 22px;
+    margin-top: 3px;
+    background: var(--ink);
+    color: var(--white);
+    border-radius: 3px;
+    font-size: 13px;
+  }
+  .checklist h3 { margin: 0 0 2px; font-size: var(--fs-body); }
+  .checklist p { margin: 0; font-size: var(--fs-small); }
+
+  .bands { padding-block: 72px; background-size: cover; background-position: center; }
+  .band-card {
+    padding: 32px 30px;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+  }
+  .band-card h2 { font-size: 26px; }
+  .band-card p, .band-card li { font-size: var(--fs-small); }
+</style>

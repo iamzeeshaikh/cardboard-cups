@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import CtaSection from '../components/CtaSection.astro';
+import products from '../data/products.json';
+import categories from '../data/categories.json';
+import { breadcrumbs, itemList } from '../lib/schema';
+
+const crumbs = [{ label: 'Home', href: '/' }, { label: 'Shop' }];
+const byCategory = categories.map((c) => ({
+  category: c,
+  items: products
+    .filter((p) => p.category === c.slug)
+    .sort((a, b) => a.name.localeCompare(b.name)),
+}));
+---
+<Base
+  title="Shop - Cardboard Cups"
+  description="Browse the full Cardboard Cups range — cup types, cup sleeves and baking cups. Custom printing, bulk quantities and free quotes on every product."
+  path="/shop/"
+  ogImage={products[0]?.images[0]?.src}
+  schema={[breadcrumbs(crumbs), itemList('All products', products.map((p) => ({ name: p.name, url: p.url })))]}
+>
+  <Breadcrumbs items={crumbs} />
+
+  <section class="section">
+    <div class="container">
+      <h1>Shop</h1>
+      <p class="shop__lead">
+        Every cup, sleeve and baking cup we supply, grouped by category. Pricing depends on size,
+        quantity, material, printing and finishing — request a free quote for your specification.
+      </p>
+
+      {byCategory.map(({ category, items }) => (
+        <div class="shop__group">
+          <h2><a href={category.url}>{category.name}</a></h2>
+          <div class="grid grid--4">
+            {items.map((p) => (
+              <ProductCard href={p.url} name={p.name} image={p.images[0]} headingLevel={3} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <CtaSection />
+</Base>
+
+<style>
+  .shop__lead { max-width: 68ch; }
+  .shop__group { margin-top: 44px; }
+  .shop__group h2 { margin-bottom: 20px; }
+  .shop__group h2 a { text-decoration: none; }
+  .shop__group h2 a:hover { color: var(--peach-text); }
+</style>

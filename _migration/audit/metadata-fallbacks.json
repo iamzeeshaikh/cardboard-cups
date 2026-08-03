@@ -1,0 +1,47 @@
+{
+ "rule": "Yoast export had no title/description for these; live page source used where present, otherwise written from visible page content. Recorded per the brief's metadata fallback rule.",
+ "pages": [
+  {
+   "url": "/about-us/",
+   "title": "preserved from live page source",
+   "description": "WRITTEN \u2014 neither Yoast nor the live page had one",
+   "source_of_description": "visible page content"
+  },
+  {
+   "url": "/contact-us/",
+   "title": "preserved from live page source",
+   "description": "WRITTEN",
+   "source_of_description": "visible page content + footer contact details"
+  },
+  {
+   "url": "/get-free-quote/",
+   "title": "preserved from live page source",
+   "description": "WRITTEN",
+   "source_of_description": "visible page content"
+  },
+  {
+   "url": "/privacy-policy/",
+   "title": "preserved from live page source",
+   "description": "WRITTEN",
+   "source_of_description": "visible page content"
+  },
+  {
+   "url": "/terms-conditions/",
+   "title": "preserved from live page source",
+   "description": "WRITTEN",
+   "source_of_description": "visible page content"
+  },
+  {
+   "url": "/shop/",
+   "title": "preserved from live page source (\"Shop - Cardboard Cups\")",
+   "description": "WRITTEN",
+   "source_of_description": "visible page content"
+  },
+  {
+   "url": "/404/",
+   "title": "new page",
+   "description": "WRITTEN",
+   "source_of_description": "n/a - noindex, excluded from sitemap"
+  }
+ ]
+}

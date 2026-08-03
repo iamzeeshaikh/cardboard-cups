@@ -1,0 +1,14 @@
+{
+ "pages_migrated": 28,
+ "products": 18,
+ "categories": 3,
+ "images_migrated": 123,
+ "webp_renditions": 328,
+ "unchanged_urls": 27,
+ "redirects": 5,
+ "faqs": 270,
+ "spec_tables": 18,
+ "unresolved": [
+  "/wp-content/uploads/2025/12/Cup-Sleeves.jpg"
+ ]
+}

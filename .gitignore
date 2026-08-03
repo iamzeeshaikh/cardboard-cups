@@ -1,0 +1,37 @@
+# ---------------------------------------------------------------- secrets
+# localhost.sql is a full WordPress dump: it contains bcrypt password hashes
+# for the `webmaster` and `orion95436` accounts plus personal email addresses.
+# It must never reach a public repository. Keep it locally and in offline backup.
+localhost.sql
+*.sql
+
+# The WXR exports embed the site owner's personal email address.
+*.WordPress.*.xml
+
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------------- build output
+node_modules/
+dist/
+.astro/
+*.log
+
+# Regenerated from the originals by `npm run images` on every build.
+**/wp-content/uploads/**/*-[0-9]*w.webp
+
+# ---------------------------------------------------------------- working files
+# Large local-only artefacts: cached copies of the live site, QA screenshots and
+# a duplicate of the images already committed under cardboardcups-astro/public.
+_migration/media/
+_migration/crawl/
+_migration/qa/
+_migration/ref/
+
+# Full-page reference screenshots (~30 MB)
+cardboard 1.png
+cardboard 2.png
+
+# ---------------------------------------------------------------- os
+.DS_Store

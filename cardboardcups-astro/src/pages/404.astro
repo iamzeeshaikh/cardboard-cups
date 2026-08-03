@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import { NAV } from '../data/site';
+---
+<Base
+  title="Page not found - Cardboard Cups"
+  description="The page you requested could not be found. Browse our cardboard cup range or request a free quote."
+  path="/404/"
+  noindex
+>
+  <section class="section notfound">
+    <div class="container">
+      <p class="notfound__code">404</p>
+      <h1>Page not found</h1>
+      <p>The page you were looking for is not here. It may have been moved or removed.</p>
+      <div class="notfound__actions">
+        <a class="btn btn--primary" href="/">Back to home</a>
+        <a class="btn btn--outline" href="/shop/">Browse all products</a>
+      </div>
+      <nav class="notfound__nav" aria-label="Product categories">
+        <h2>Product categories</h2>
+        <ul>
+          {NAV.filter((n) => n.children).map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+        </ul>
+      </nav>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notfound { text-align: center; }
+  .notfound__code { font-size: 72px; font-weight: 800; color: var(--peach); margin: 0; line-height: 1; }
+  .notfound__actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 24px; }
+  .notfound__nav { margin-top: 46px; }
+  .notfound__nav h2 { font-size: 20px; }
+  .notfound__nav ul { display: flex; flex-wrap: wrap; gap: 10px 22px; justify-content: center; padding: 0; list-style: none; }
+  .notfound__nav a { color: var(--peach-text); font-weight: 600; }
+</style>

@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Enquiry endpoint — nothing to index, and it only answers POST.
+Disallow: /api/
+
+Sitemap: https://cardboardcups.com/sitemap.xml

@@ -1,0 +1,14 @@
+# Netlify redirect table. Order matters: most specific first.
+https://www.cardboardcups.com/*   https://cardboardcups.com/:splat   301!
+http://cardboardcups.com/*        https://cardboardcups.com/:splat   301!
+
+/cart                       /get-free-quote/   301
+/cart/                      /get-free-quote/   301
+/checkout                   /get-free-quote/   301
+/checkout/                  /get-free-quote/   301
+/my-account                 /contact-us/       301
+/my-account/                /contact-us/       301
+/brand/cardboard-cups       /shop/             301
+/brand/cardboard-cups/      /shop/             301
+/brand/cardboard-cups/page/2   /shop/          301
+/brand/cardboard-cups/page/2/  /shop/          301

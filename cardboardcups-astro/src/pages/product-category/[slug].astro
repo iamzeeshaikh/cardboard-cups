@@ -1,0 +1,111 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import SmartImage from '../../components/SmartImage.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import CtaSection from '../../components/CtaSection.astro';
+import products from '../../data/products.json';
+import categories from '../../data/categories.json';
+import { HOME_FAQ } from '../../data/home';
+import { CTA } from '../../data/site';
+import { breadcrumbs, itemList, faqPage } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return categories.map((c) => ({ params: { slug: c.slug }, props: { category: c } }));
+}
+
+const { category } = Astro.props;
+const bySlug = new Map(products.map((p) => [p.slug, p]));
+// Alphabetical, matching the WooCommerce archive ordering on the live site.
+const items = category.products
+  .map((s) => bySlug.get(s)!)
+  .filter(Boolean)
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+const crumbs = [{ label: 'Home', href: '/' }, { label: category.name }];
+
+const schema = [
+  breadcrumbs(crumbs),
+  itemList(category.name, items.map((p) => ({ name: p.name, url: p.url }))),
+  faqPage(HOME_FAQ.items),
+];
+---
+
+<Base
+  title={category.seo.title ?? `${category.name} | Cardboard Cups`}
+  description={category.seo.description ?? ''}
+  path={category.url}
+  ogImage={category.heroImage?.src}
+  schema={schema}
+>
+  <Breadcrumbs items={crumbs} />
+
+  <section class="cat-hero">
+    <div class="container cat-hero__inner">
+      <div>
+        <h1>{category.name}</h1>
+        <p class="cat-hero__stock">In Stock</p>
+        <div class="cat-hero__actions">
+          <a class="btn btn--primary" href={CTA.quote.href}>Get Free Quote</a>
+          <a class="btn btn--outline" href={CTA.bulk.href}>Request Bulk Pricing</a>
+        </div>
+      </div>
+      {
+        category.heroImage && (
+          <SmartImage
+            src={category.heroImage.src}
+            alt={category.heroImage.alt}
+            sizes="(max-width: 900px) 92vw, 460px"
+            loading="eager"
+            fetchpriority="high"
+            ratio="4/3"
+            class="cat-hero__media"
+          />
+        )
+      }
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="visually-hidden">{category.name} products</h2>
+      <div class="grid grid--4">
+        {
+          items.map((p) => (
+            <ProductCard href={p.url} name={p.name} image={p.images[0]} headingLevel={3} />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container narrow">
+      <h2 class="section__title">Frequently Asked Questions</h2>
+      <Faq items={HOME_FAQ.items} />
+    </div>
+  </section>
+
+  <CtaSection />
+</Base>
+
+<style>
+  .cat-hero { background: #fafafa; }
+  .cat-hero__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 460px;
+    align-items: center;
+    gap: 40px;
+    padding-block: 46px;
+  }
+  .cat-hero h1 { margin-bottom: 8px; }
+  .cat-hero__stock { color: var(--peach-text); font-weight: 700; }
+  .cat-hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+  .cat-hero__media :global(img) { width: 100%; height: auto; border-radius: 6px; display: block; object-fit: cover; }
+  .section--tint { background: #fafafa; }
+  .narrow { max-width: 820px; }
+  @media (max-width: 900px) {
+    .cat-hero__inner { grid-template-columns: minmax(0, 1fr); gap: 26px; padding-block: 32px; }
+  }
+</style>

@@ -1,0 +1,87 @@
+---
+import Base from '../layouts/Base.astro';
+import SmartImage from '../components/SmartImage.astro';
+import CtaSection from '../components/CtaSection.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { PRINTING, SHIPPING } from '../data/home';
+import { breadcrumbs } from '../lib/schema';
+
+const crumbs = [{ label: 'Home', href: '/' }, { label: 'About Us' }];
+---
+<Base
+  title="About Us - Cardboard Cups"
+  description="Cardboard Cups supplies durable, sustainable cardboard cups to cafés, food brands, offices, events and distributors across the USA, UK, Canada, Australia and Europe."
+  path="/about-us/"
+  ogImage="/wp-content/uploads/2025/12/Tea-Serving-Cups.jpg"
+  ogType="article"
+  schema={[breadcrumbs(crumbs)]}
+>
+  <Breadcrumbs items={crumbs} />
+
+  <section class="section">
+    <div class="container split">
+      <div>
+        <h1>About Us</h1>
+        <p>Serve hot and cold drinks responsibly with high-quality cardboard cups made for cafés, food brands, offices, events, and distributors across the <strong>USA, UK, Canada, Australia, and Europe</strong>.</p>
+        <p>Our cups combine durability, sustainability, and clean design — suitable for everyday service and large-scale commercial use.</p>
+        <a class="btn btn--primary" href="/contact-us/">Contact Us</a>
+      </div>
+      <SmartImage
+        src="/wp-content/uploads/2025/12/Tea-Serving-Cups.jpg"
+        alt="Stack of branded kraft cardboard cups on a light surface"
+        sizes="(max-width: 900px) 92vw, 520px"
+        loading="eager"
+        fetchpriority="high"
+        class="split__media"
+      />
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="container split split--reverse">
+      <div>
+        <h2>{PRINTING.h2}</h2>
+        <p>{PRINTING.lead}</p>
+        <p><strong>{PRINTING.listTitle}</strong></p>
+        <ul>{PRINTING.list.map((i) => <li>{i}</li>)}</ul>
+        <p>{PRINTING.closing}</p>
+        <a class="btn btn--primary" href={PRINTING.cta.href}>{PRINTING.cta.label}</a>
+      </div>
+      <SmartImage
+        src={PRINTING.image}
+        alt={PRINTING.imageAlt}
+        sizes="(max-width: 900px) 92vw, 520px"
+        class="split__media"
+      />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container split">
+      <SmartImage
+        src="/wp-content/uploads/2025/12/restaurant-shake-cups.jpg"
+        alt="Cardboard milkshake cups prepared for restaurant service"
+        sizes="(max-width: 900px) 92vw, 520px"
+        class="split__media"
+      />
+      <div>
+        <h2>{SHIPPING.h2}</h2>
+        <p>{SHIPPING.lead}</p>
+        <ul>{SHIPPING.list.map((i) => <li>{i}</li>)}</ul>
+        {SHIPPING.closing.map((p) => <p>{p}</p>)}
+      </div>
+    </div>
+  </section>
+
+  <CtaSection />
+</Base>
+
+<style>
+  .section--tint { background: #fafafa; }
+  .split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 46px; }
+  .split__media :global(img) { width: 100%; height: auto; border-radius: 4px; display: block; }
+  @media (max-width: 900px) {
+    .split { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    .split--reverse > :first-child { order: 2; }
+  }
+</style>

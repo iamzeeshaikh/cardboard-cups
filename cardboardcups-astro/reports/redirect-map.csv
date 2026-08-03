@@ -1,0 +1,9 @@
+old_url,new_url,status,reason
+https://cardboardcups.com/cart/,https://cardboardcups.com/get-free-quote/,301,"WooCommerce cart; site takes quotations, not orders"
+https://cardboardcups.com/checkout/,https://cardboardcups.com/get-free-quote/,301,WooCommerce checkout; no payment gateway was ever enabled
+https://cardboardcups.com/my-account/,https://cardboardcups.com/contact-us/,301,No customer accounts exist; sales team handles enquiries
+https://cardboardcups.com/brand/cardboard-cups/,https://cardboardcups.com/shop/,301,Single-brand archive duplicating /shop/ (brand == site name)
+https://cardboardcups.com/brand/cardboard-cups/page/2/,https://cardboardcups.com/shop/,301,Paginated duplicate of the same brand archive
+http://cardboardcups.com/*,https://cardboardcups.com/*,301,Force HTTPS
+https://www.cardboardcups.com/*,https://cardboardcups.com/*,301,Canonical host is non-www (matches current live behaviour)
+https://cardboardcups.com/<path> (no slash),https://cardboardcups.com/<path>/,301,Canonical trailing slash (matches current live behaviour)

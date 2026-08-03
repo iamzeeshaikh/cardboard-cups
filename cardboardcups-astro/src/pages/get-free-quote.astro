@@ -1,0 +1,61 @@
+---
+import Base from '../layouts/Base.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import { CONTACT } from '../data/site';
+import { breadcrumbs } from '../lib/schema';
+
+const crumbs = [{ label: 'Home', href: '/' }, { label: 'Get Free Quote' }];
+// Product can be pre-selected from a product page link; rendered server-side is
+// not possible on a static page, so the value is applied by the inline script.
+---
+<Base
+  title="Get Free Quote - Cardboard Cups"
+  description="Request a free quote for custom printed cardboard cups, sleeves and baking cups. Tell us your size, quantity and print requirements and we reply within 24 hours."
+  path="/get-free-quote/"
+  ogType="article"
+  schema={[breadcrumbs(crumbs)]}
+>
+  <Breadcrumbs items={crumbs} />
+
+  <section class="section">
+    <div class="container quote">
+      <div class="quote__intro">
+        <h1>Get Free Quote</h1>
+        <p>It’s simple, speedy and free to request a quote from us – just let us know what you’re looking for, and our experienced team will come back to you within 24 hours or less.</p>
+        <p>Share your cup type, size, quantity and any printing requirements, and attach artwork if you have it ready.</p>
+        <p>
+          Prefer to talk? Call <a href={CONTACT.phoneHref}>{CONTACT.phone}</a> or email
+          <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>.
+        </p>
+      </div>
+      <div class="quote__form">
+        <QuoteForm id="quote" variant="full" heading="Request Custom Quote" />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .quote { display: grid; grid-template-columns: minmax(0, 1fr) 520px; gap: 48px; align-items: start; }
+  @media (max-width: 900px) { .quote { grid-template-columns: minmax(0, 1fr); gap: 30px; } }
+</style>
+
+<script>
+  // Carry ?product= from a product page into the form, and surface the
+  // no-JavaScript redirect result if the browser came back with ?sent=1.
+  const params = new URLSearchParams(location.search);
+  const product = params.get('product');
+  if (product) {
+    const field = document.querySelector<HTMLInputElement>('#quote-product');
+    if (field) field.value = product.slice(0, 160);
+  }
+  const status = document.querySelector<HTMLElement>('[data-quote-status]');
+  if (status && params.has('sent')) {
+    status.dataset.state = 'ok';
+    status.textContent = 'Thank you — your enquiry has been sent. We reply within one business day.';
+  } else if (status && params.has('error')) {
+    status.dataset.state = 'error';
+    status.textContent = 'Sorry, your enquiry could not be sent. Please email info@cardboardcups.com.';
+  }
+</script>
