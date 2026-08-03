@@ -6,7 +6,7 @@ import { chromium } from 'playwright';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-const BASE = process.env.BASE ?? 'http://127.0.0.1:4321';
+const BASE = process.env.BASE ?? 'http://127.0.0.1:4401';
 const AXE = path.join(import.meta.dirname, '..', 'node_modules', 'axe-core', 'axe.min.js');
 const axeSource = await readFile(AXE, 'utf8');
 

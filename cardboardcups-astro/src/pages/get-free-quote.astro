@@ -42,19 +42,17 @@ const crumbs = [{ label: 'Home', href: '/' }, { label: 'Get Free Quote' }];
 </style>
 
 <script>
-  // Carry ?product= from a product page into the form, and surface the
-  // no-JavaScript redirect result if the browser came back with ?sent=1.
+  // Carry ?product= from a product page into the form, and surface a failed
+  // no-JavaScript submission if the browser came back with ?error=1.
   const params = new URLSearchParams(location.search);
   const product = params.get('product');
   if (product) {
     const field = document.querySelector<HTMLInputElement>('#quote-product');
     if (field) field.value = product.slice(0, 160);
   }
+  // Successful submissions land on /thank-you/; only failures return here.
   const status = document.querySelector<HTMLElement>('[data-quote-status]');
-  if (status && params.has('sent')) {
-    status.dataset.state = 'ok';
-    status.textContent = 'Thank you — your enquiry has been sent. We reply within one business day.';
-  } else if (status && params.has('error')) {
+  if (status && params.has('error')) {
     status.dataset.state = 'error';
     status.textContent = 'Sorry, your enquiry could not be sent. Please email info@cardboardcups.com.';
   }

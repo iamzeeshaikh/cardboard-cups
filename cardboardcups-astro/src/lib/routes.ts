@@ -15,6 +15,12 @@ export const STATIC_PAGES = [
   '/terms-conditions/',
 ];
 
+/**
+ * Real pages that must return 200 but must never be indexed or listed in the
+ * sitemap: the error page and the post-submission confirmation.
+ */
+export const NOINDEX_PAGES = ['/404/', '/thank-you/'];
+
 export const INDEXABLE: string[] = [
   ...STATIC_PAGES,
   ...categories.map((c) => c.url),

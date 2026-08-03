@@ -12,10 +12,12 @@
     "audit": "node scripts/audit.mjs",
     "interact": "node scripts/interact.mjs",
     "shots": "node scripts/shots.mjs",
-    "images": "node scripts/images.mjs"
+    "images": "node scripts/images.mjs",
+    "serve": "HOST=127.0.0.1 PORT=4401 node ./dist/server/entry.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^11.0.3",
+    "@astrojs/vercel": "^11.0.4",
     "astro": "^7.1.6",
     "nodemailer": "^9.0.3",
     "sharp": "^0.35.3"

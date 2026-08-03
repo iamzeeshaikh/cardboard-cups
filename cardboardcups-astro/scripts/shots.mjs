@@ -8,7 +8,7 @@ import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const OUT = path.join(ROOT, '..', '_migration', 'qa');
-const LOCAL = process.env.BASE ?? 'http://127.0.0.1:4321';
+const LOCAL = process.env.BASE ?? 'http://127.0.0.1:4401';
 const LIVE = 'https://cardboardcups.com';
 
 const WIDTHS = [320, 375, 768, 1024, 1440];

@@ -4,7 +4,7 @@
  */
 import { chromium } from 'playwright';
 
-const BASE = process.env.BASE ?? 'http://127.0.0.1:4321';
+const BASE = process.env.BASE ?? 'http://127.0.0.1:4401';
 const browser = await chromium.launch();
 const results = [];
 const check = (name, ok) => results.push([name, !!ok]);
@@ -65,7 +65,6 @@ check('skip link is the first tab stop',
 
 // ---- client-side form validation ---------------------------------------
 await page.goto(`${BASE}/get-free-quote/`, { waitUntil: 'networkidle' });
-await page.click('#quote button[type="submit"]').catch(() => {});
 await page.locator('form[data-quote-form] button[type="submit"]').first().click();
 check('invalid submit marks the name field',
   (await page.getAttribute('#quote-name', 'aria-invalid')) === 'true');
@@ -76,6 +75,36 @@ check('an error message is associated with the field',
 await page.goto(`${BASE}/get-free-quote/?product=Cardboard%20Mugs`, { waitUntil: 'networkidle' });
 check('?product= pre-fills the quote form',
   (await page.inputValue('#quote-product')) === 'Cardboard Mugs');
+
+// ---- thank-you page ----------------------------------------------------
+await page.goto(`${BASE}/thank-you/`, { waitUntil: 'networkidle' });
+check('thank-you page returns content', await page.locator('h1').isVisible());
+check('thank-you is noindex',
+  (await page.getAttribute('meta[name="robots"]', 'content'))?.includes('noindex'));
+
+await page.goto(`${BASE}/thank-you/?product=Cardboard%20Tea%20Cups`, { waitUntil: 'networkidle' });
+check('thank-you names the product enquired about',
+  (await page.textContent('[data-ty-product]'))?.includes('Cardboard Tea Cups'));
+
+// the product name must be inserted as text, never parsed as markup
+await page.goto(`${BASE}/thank-you/?product=%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E`,
+  { waitUntil: 'networkidle' });
+check('thank-you does not render markup from the query string',
+  (await page.locator('[data-ty-product] img').count()) === 0);
+
+// ---- a real submission lands on the thank-you page ---------------------
+await page.goto(`${BASE}/product/cardboard-mugs/`, { waitUntil: 'networkidle' });
+await page.fill('#product-name', 'QA Tester');
+await page.fill('#product-email', 'qa@example.com');
+await page.fill('#product-message', 'Please quote 5000 printed cups for a launch.');
+await Promise.all([
+  page.waitForURL(/\/thank-you\//, { timeout: 20000 }),
+  page.locator('form[data-quote-form] button[type="submit"]').first().click(),
+]);
+check('submitting a product form lands on /thank-you/',
+  page.url().includes('/thank-you/'));
+check('the product name is carried across',
+  decodeURIComponent(page.url()).includes('Cardboard Mugs'));
 
 await page.close();
 await browser.close();

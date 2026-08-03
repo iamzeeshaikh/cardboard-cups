@@ -228,10 +228,12 @@ const uid = (n: string) => `${id}-${n}`;
         });
         const data = await res.json().catch(() => ({}));
         if (res.ok && data.ok) {
-          // Only claim success once the server confirms the mail was accepted.
+          // Only navigate once the server confirms the mail was accepted.
           status.dataset.state = 'ok';
           status.textContent = data.message || 'Thank you — your enquiry has been sent.';
           form.reset();
+          window.location.assign(data.redirect || '/thank-you/');
+          return;
         } else {
           status.dataset.state = 'error';
           status.textContent = data.message || 'Sorry, your enquiry could not be sent. Please email us instead.';

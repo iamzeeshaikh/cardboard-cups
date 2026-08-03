@@ -1,0 +1,100 @@
+---
+import Base from '../layouts/Base.astro';
+import { CONTACT } from '../data/site';
+import categories from '../data/categories.json';
+
+// Confirmation page reached only after the server accepts an enquiry.
+// noindex and kept out of the sitemap: it is a utility page, not content.
+---
+
+<Base
+  title="Thank you - Cardboard Cups"
+  description="Your enquiry has been received. Our team replies with a custom quote within one business day."
+  path="/thank-you/"
+  noindex
+>
+  <section class="section ty">
+    <div class="container ty__inner">
+      <span class="ty__tick" aria-hidden="true">✓</span>
+
+      <h1>Thank you — your enquiry is on its way</h1>
+
+      <p class="ty__lead" data-ty-product>
+        Our team will review your requirements and come back to you with a custom
+        quote within one business day.
+      </p>
+
+      <div class="ty__next">
+        <h2>What happens next</h2>
+        <ol>
+          <li>We confirm your cup type, size, quantity and print requirements.</li>
+          <li>You receive a written quote, including options for material, lining and finishing.</li>
+          <li>Once approved, we share artwork guidance and production timings.</li>
+        </ol>
+      </div>
+
+      <p>
+        Need to add something? Reply to our email, call
+        <a href={CONTACT.phoneHref}>{CONTACT.phone}</a>, or write to
+        <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>.
+      </p>
+
+      <div class="ty__actions">
+        <a class="btn btn--primary" href="/shop/">Browse all products</a>
+        <a class="btn btn--outline" href="/">Back to home</a>
+      </div>
+
+      <nav class="ty__cats" aria-labelledby="ty-cats">
+        <h2 id="ty-cats">Keep looking</h2>
+        <ul>
+          {categories.map((c) => <li><a href={c.url}>{c.name}</a></li>)}
+        </ul>
+      </nav>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ty__inner { max-width: 720px; text-align: center; }
+  .ty__tick {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 24px;
+    background: var(--mint);
+    color: var(--ink);
+    border-radius: 50%;
+    font-size: 30px;
+  }
+  .ty__lead { font-size: 19px; margin-bottom: 32px; }
+
+  .ty__next { text-align: left; margin: 0 auto 28px; }
+  .ty__next h2 { font-size: 22px; }
+  .ty__next ol { padding-left: 1.2em; }
+
+  .ty__actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 28px; }
+
+  .ty__cats { margin-top: 44px; }
+  .ty__cats h2 { font-size: 20px; }
+  .ty__cats ul {
+    display: flex; flex-wrap: wrap; gap: 10px 22px;
+    justify-content: center; padding: 0; list-style: none;
+  }
+  .ty__cats a { color: var(--peach-text); font-weight: 600; }
+
+  @media (max-width: 640px) { .ty__lead { font-size: 17px; } }
+</style>
+
+<script>
+  // Name the product back to the visitor when the form passed one along.
+  // Written with textContent, never innerHTML — this value came off the URL.
+  const product = new URLSearchParams(location.search).get('product');
+  const lead = document.querySelector<HTMLElement>('[data-ty-product]');
+  if (product && lead) {
+    const name = product.slice(0, 160);
+    lead.textContent =
+      `Thanks for your interest in ${name}. Our team will review your requirements ` +
+      `and come back to you with a custom quote within one business day.`;
+  }
+</script>

@@ -12,7 +12,7 @@ const ROOT = path.resolve(import.meta.dirname, '..');
 const DIST = path.join(ROOT, 'dist', 'client');
 const SITE = 'https://cardboardcups.com';
 
-const { INDEXABLE, REDIRECTS } = await import('../src/lib/routes.ts');
+const { INDEXABLE, REDIRECTS, NOINDEX_PAGES } = await import('../src/lib/routes.ts');
 const products = JSON.parse(await readFile(path.join(ROOT, 'src/data/products.json'), 'utf8'));
 const categories = JSON.parse(await readFile(path.join(ROOT, 'src/data/categories.json'), 'utf8'));
 
@@ -56,8 +56,12 @@ const built = [...pages.keys()];
 const missing = INDEXABLE.filter((u) => !pages.has(u));
 check('every indexable URL was built', missing.length === 0, missing);
 
-const orphan = built.filter((u) => u !== '/404/' && !INDEXABLE.includes(u));
+const orphan = built.filter((u) => !NOINDEX_PAGES.includes(u) && !INDEXABLE.includes(u));
 check('no unexpected extra pages built', orphan.length === 0, orphan);
+
+check('utility pages are built but never indexable',
+  NOINDEX_PAGES.every((u) => pages.has(u) && !INDEXABLE.includes(u)),
+  NOINDEX_PAGES.filter((u) => !pages.has(u) || INDEXABLE.includes(u)));
 
 check('redirect sources are not also built as pages',
   Object.keys(REDIRECTS).every((u) => !pages.has(u)),
@@ -95,14 +99,16 @@ for (const [url, { html }] of pages) {
   }
   if (h1s.length !== 1) h1Problems.push(`${url} has ${h1s.length} h1`);
   if (indexable && /noindex/i.test(robots ?? '')) robotsProblems.push(url);
-  if (!indexable && url === '/404/' && !/noindex/i.test(robots ?? '')) robotsProblems.push('404 not noindex');
+  if (NOINDEX_PAGES.includes(url) && !/noindex/i.test(robots ?? '')) {
+    robotsProblems.push(`${url} is missing noindex`);
+  }
 }
 
 check('every page has a usable <title>', titleProblems.length === 0, titleProblems);
 check('every page has a meta description of 50+ chars', descProblems.length === 0, descProblems);
 check('exactly one valid, unique canonical per page', canonProblems.length === 0, canonProblems);
 check('exactly one H1 per page', h1Problems.length === 0, h1Problems);
-check('no noindex on production pages (404 excepted)', robotsProblems.length === 0, robotsProblems);
+check('noindex only on utility pages, never on content', robotsProblems.length === 0, robotsProblems);
 
 const ogProblems = [];
 for (const [url, { html }] of pages) {
@@ -176,9 +182,9 @@ check('every sitemap URL is a built 200 page',
   sitemapPaths.every((p) => pages.has(p)), sitemapPaths.filter((p) => !pages.has(p)));
 check('sitemap covers every indexable URL',
   INDEXABLE.every((u) => sitemapPaths.includes(u)), INDEXABLE.filter((u) => !sitemapPaths.includes(u)));
-check('sitemap excludes redirects, 404 and API',
-  !sitemapPaths.some((p) => p in REDIRECTS || p === '/404/' || p.startsWith('/api')),
-  sitemapPaths.filter((p) => p in REDIRECTS || p === '/404/' || p.startsWith('/api')));
+check('sitemap excludes redirects, utility pages and the API',
+  !sitemapPaths.some((p) => p in REDIRECTS || NOINDEX_PAGES.includes(p) || p.startsWith('/api')),
+  sitemapPaths.filter((p) => p in REDIRECTS || NOINDEX_PAGES.includes(p) || p.startsWith('/api')));
 check('sitemap URLs all use https and a trailing slash',
   sitemapUrls.every((u) => u.startsWith('https://') && (u.endsWith('/') || u.endsWith('.xml'))));
 

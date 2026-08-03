@@ -1,5 +1,10 @@
 # Security headers, redirects and caching
 
+> **Deploying to Vercel?** The live config is `../vercel.json` at the project
+> root — that is the file Vercel reads. `deploy/vercel.json` is kept only as a
+> reference for the redirect table; Astro's Vercel adapter already emits the
+> redirects from `src/lib/routes.ts` into the build output.
+
 The site is prerendered static HTML plus one server route (`/api/quote/`). Astro
 middleware does **not** run for prerendered pages, so response headers must be
 set by whatever serves `dist/client`. Ready-made configurations for the common

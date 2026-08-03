@@ -78,16 +78,32 @@ function env(key: string) {
   return process.env[key] ?? (import.meta.env as Record<string, string | undefined>)[key];
 }
 
-function reply(request: Request, ok: boolean, message: string, status: number) {
+/** Only ever redirect to our own paths — never to a value a visitor controls. */
+function safePath(value: string | undefined) {
+  return value && /^\/[A-Za-z0-9\-._~/]*$/.test(value) && !value.startsWith('//')
+    ? value
+    : '/get-free-quote/';
+}
+
+type ReplyOpts = { back?: string; product?: string };
+
+function reply(request: Request, ok: boolean, message: string, status: number, opts: ReplyOpts = {}) {
   const wantsJson = (request.headers.get('accept') ?? '').includes('application/json');
+  const redirectTo = ok
+    ? `/thank-you/${opts.product ? `?product=${encodeURIComponent(opts.product)}` : ''}`
+    : `${safePath(opts.back)}?error=1`;
+
   if (wantsJson) {
-    return new Response(JSON.stringify({ ok, message }), {
+    // `redirect` tells the client script where to send the visitor next.
+    return new Response(JSON.stringify({ ok, message, redirect: ok ? redirectTo : undefined }), {
       status,
       headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' },
     });
   }
-  const target = ok ? '/get-free-quote/?sent=1' : '/get-free-quote/?error=1';
-  return new Response(null, { status: 303, headers: { Location: target, 'cache-control': 'no-store' } });
+  return new Response(null, {
+    status: 303,
+    headers: { Location: redirectTo, 'cache-control': 'no-store' },
+  });
 }
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
@@ -109,6 +125,8 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     return reply(request, true, 'Thank you — your enquiry has been sent.', 200);
   }
 
+  const back = safePath(clean(form.get('source'), 200));
+
   const name = clean(form.get('name'), 120);
   const email = clean(form.get('email'), 180);
   const phone = clean(form.get('phone'), 40);
@@ -121,30 +139,30 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) errors.push('a valid email address');
   if (message.length < 10) errors.push('a message of at least 10 characters');
   if (errors.length) {
-    return reply(request, false, `Please provide ${errors.join(', ')}.`, 400);
+    return reply(request, false, `Please provide ${errors.join(', ')}.`, 400, { back });
   }
 
   const attachments: { filename: string; content: Buffer; contentType: string }[] = [];
   const upload = form.get('artwork');
   if (upload instanceof File && upload.size > 0) {
     if (upload.size > MAX_UPLOAD) {
-      return reply(request, false, 'That artwork file is larger than 8 MB.', 413);
+      return reply(request, false, 'That artwork file is larger than 8 MB.', 413, { back });
     }
     const { filename, ext } = sanitiseFilename(upload.name);
     const allowedTypes = ALLOWED_UPLOADS[ext];
     if (!allowedTypes) {
-      return reply(request, false, 'That file type is not accepted. Use PDF, PNG, JPG, WebP, AI, EPS or SVG.', 415);
+      return reply(request, false, 'That file type is not accepted. Use PDF, PNG, JPG, WebP, AI, EPS or SVG.', 415, { back });
     }
     const buf = Buffer.from(await upload.arrayBuffer());
     const declared = (upload.type || '').toLowerCase();
     if (declared && !allowedTypes.includes(declared)) {
-      return reply(request, false, 'That file did not match its type. Please re-export and try again.', 415);
+      return reply(request, false, 'That file did not match its type. Please re-export and try again.', 415, { back });
     }
     if (MAGIC[ext] && !startsWithAny(buf, MAGIC[ext])) {
-      return reply(request, false, 'That file did not match its type. Please re-export and try again.', 415);
+      return reply(request, false, 'That file did not match its type. Please re-export and try again.', 415, { back });
     }
     if (ext === 'svg' && /<script|javascript:|on\w+\s*=/i.test(buf.toString('utf8', 0, 8192))) {
-      return reply(request, false, 'That SVG contains scripting and was not accepted.', 415);
+      return reply(request, false, 'That SVG contains scripting and was not accepted.', 415, { back });
     }
     attachments.push({ filename, content: buf, contentType: allowedTypes[0] });
   }
@@ -159,7 +177,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   if (!host || !user || !pass || !to || !fromEmail) {
     console.error('[quote] SMTP environment is incomplete — enquiry not sent');
-    return reply(request, false, 'The enquiry service is not available right now. Please email info@cardboardcups.com.', 503);
+    return reply(request, false, 'The enquiry service is not available right now. Please email info@cardboardcups.com.', 503, { back });
   }
 
   const rows: [string, string][] = [
@@ -195,10 +213,10 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     });
   } catch (err) {
     console.error('[quote] send failed:', err);
-    return reply(request, false, 'Sorry, your enquiry could not be sent. Please email info@cardboardcups.com.', 502);
+    return reply(request, false, 'Sorry, your enquiry could not be sent. Please email info@cardboardcups.com.', 502, { back });
   }
 
-  return reply(request, true, 'Thank you — your enquiry has been sent. We reply within one business day.', 200);
+  return reply(request, true, 'Thank you — your enquiry has been sent. We reply within one business day.', 200, { product: productName });
 };
 
 export const GET: APIRoute = () =>
