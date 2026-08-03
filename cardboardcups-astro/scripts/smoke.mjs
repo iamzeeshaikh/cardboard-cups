@@ -58,9 +58,16 @@ check('/about-us -> /about-us/', [301, 308].includes(slash.status) &&
   new URL(slash.location, BASE).pathname === '/about-us/', `got ${slash.status}`);
 
 // ---- unknown URLs are a genuine 404 ---------------------------------------
-for (const path of ['/nope-xyz/', '/product/not-real/', '/wp-admin/', '/product-category/uncategorized/']) {
+for (const path of ['/nope-xyz/', '/product/not-real/', '/product-category/uncategorized/']) {
   const { status } = await head(path);
   check(`${path} returns 404`, status === 404, `got ${status}`);
+}
+
+// Known WordPress attack paths: 404 from us, or 403 if the host's firewall
+// swallows them first. Either is fine — what matters is nothing is served.
+for (const path of ['/wp-admin/', '/wp-login.php', '/xmlrpc.php']) {
+  const { status } = await head(path);
+  check(`${path} is not served`, [403, 404].includes(status), `got ${status}`);
 }
 
 // ---- security headers ------------------------------------------------------
