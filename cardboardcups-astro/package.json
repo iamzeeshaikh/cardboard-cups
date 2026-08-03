@@ -13,7 +13,8 @@
     "interact": "node scripts/interact.mjs",
     "shots": "node scripts/shots.mjs",
     "images": "node scripts/images.mjs",
-    "serve": "HOST=127.0.0.1 PORT=4401 node ./dist/server/entry.mjs"
+    "serve": "HOST=127.0.0.1 PORT=4401 node ./dist/server/entry.mjs",
+    "smoke": "node --experimental-strip-types scripts/smoke.mjs"
   },
   "dependencies": {
     "@astrojs/node": "^11.0.3",
