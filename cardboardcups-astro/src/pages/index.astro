@@ -161,11 +161,19 @@ const schema = [organization(), website(), faqPage(HOME_FAQ.items)];
   </section>
 
   <section class="section">
-    <div class="container narrow">
-      <h2>{SHIPPING.h2}</h2>
-      <p>{SHIPPING.lead}</p>
-      <ul>{SHIPPING.list.map((i) => <li>{i}</li>)}</ul>
-      {SHIPPING.closing.map((p) => <p>{p}</p>)}
+    <div class="container split split--reverse">
+      <div>
+        <h2>{SHIPPING.h2}</h2>
+        <p>{SHIPPING.lead}</p>
+        <ul>{SHIPPING.list.map((i) => <li>{i}</li>)}</ul>
+        {SHIPPING.closing.map((p) => <p>{p}</p>)}
+      </div>
+      <SmartImage
+        src={SHIPPING.image}
+        alt={SHIPPING.imageAlt}
+        sizes="(max-width: 900px) 92vw, 520px"
+        class="split__media"
+      />
     </div>
   </section>
 

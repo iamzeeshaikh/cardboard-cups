@@ -136,7 +136,7 @@ const isCurrent = (href: string) =>
     min-height: 84px;
   }
   .header__logo { display: inline-flex; flex: none; }
-  .header__logo :global(img) { width: 160px; height: auto; }
+  .header__logo :global(img) { width: 239px; max-width: 46vw; height: auto; }
 
   /* Bar CTA is mobile-only; the desktop one lives at the end of the nav list. */
   .header__cta { display: none; margin-left: auto; }
@@ -173,15 +173,17 @@ const isCurrent = (href: string) =>
   .nav__list {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 2px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
-  .nav__item { position: relative; margin: 0; }
+  /* Flex row so the disclosure caret sits beside its label instead of wrapping
+     onto a second line once the wider logo tightens the bar. */
+  .nav__item { position: relative; margin: 0; display: flex; align-items: center; }
   .nav__link {
     display: inline-block;
-    padding: 10px 12px;
+    padding: 10px 8px;
     color: var(--ink);
     font-size: 16px;
     font-weight: 600;
@@ -197,10 +199,13 @@ const isCurrent = (href: string) =>
   .nav__disclosure {
     display: grid;
     place-items: center;
+    /* 24×24 is the WCAG target-size floor — do not shrink this to buy bar
+       space; take it from .nav__link padding or .nav__list gap instead. */
+    flex: none;
     width: 24px;
     height: 24px;
     padding: 0;
-    margin-left: -6px;
+    margin-left: -4px;
     color: var(--ink);
     background: none;
     border: 0;

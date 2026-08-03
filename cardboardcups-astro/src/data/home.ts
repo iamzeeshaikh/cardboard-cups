@@ -102,6 +102,8 @@ export const PRINTING = {
 
 export const SHIPPING = {
   h2: 'International Shipping and Support',
+  image: '/wp-content/uploads/2025/12/restaurant-shake-cups.jpg',
+  imageAlt: 'Two printed cardboard cups with a black sip lid floating above one of them',
   lead: 'We ship cardboard cups to:',
   list: ['United States', 'United Kingdom', 'Canada', 'Australia', 'European Union'],
   closing: [

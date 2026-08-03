@@ -8,7 +8,7 @@ import Faq from '../../components/Faq.astro';
 import CtaSection from '../../components/CtaSection.astro';
 import products from '../../data/products.json';
 import categories from '../../data/categories.json';
-import { CTA } from '../../data/site';
+import { CTA, PRICE_FROM } from '../../data/site';
 import { breadcrumbs, faqPage, product as productSchema } from '../../lib/schema';
 
 export function getStaticPaths() {
@@ -88,6 +88,11 @@ const specs = product.specifications;
     <div class="product__summary">
       <h1>{product.name}</h1>
       {product.shortDescription.map((p) => <p>{p}</p>)}
+
+      <p class="product__price">
+        <span class="product__price-label">{PRICE_FROM.label}</span>
+        <span class="product__price-amount">{PRICE_FROM.amount}</span>
+      </p>
 
       <p class="product__stock">
         {product.inStock ? 'Available in Stock' : 'Made to order'}
@@ -205,6 +210,14 @@ const specs = product.specifications;
 
   .product__summary h1 { font-size: 30px; }
   .product__summary p { font-size: var(--fs-small); }
+  .product__price {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .product__price-label { font-size: var(--fs-h3); font-weight: 700; color: var(--ink); }
+  .product__price-amount { font-size: var(--fs-h3); font-weight: 800; color: var(--ink); }
   .product__stock { color: var(--peach-text); font-weight: 700; }
   .product__actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 22px 0; }
 
@@ -243,6 +256,20 @@ const specs = product.specifications;
   .tabs__panel { padding-top: 28px; }
   .tabs__panel:focus-visible { outline-offset: -3px; }
   .tabs__heading { font-size: var(--fs-h2); }
+  /* With tabs live the panel heading only repeats the tab label, so it is
+     hidden visually but kept for screen readers and for the no-JS layout
+     below, where every panel is shown at once and the headings separate them. */
+  .tabs[data-enhanced] .tabs__heading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .tabs[data-enhanced] .tabs__panel { padding-top: 24px; }
 
   /* Without JS every panel stays visible, so no content is ever unreachable. */
   .tabs:not([data-enhanced]) .tabs__list { display: none; }

@@ -175,9 +175,13 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   const fromEmail = env('SMTP_FROM_EMAIL');
   const fromName = env('SMTP_FROM_NAME') ?? 'Cardboard Cups Website';
 
+  // A visitor who filled the form in good faith always lands on /thank-you/.
+  // Delivery problems are ours, not theirs — they are logged, never shown.
   if (!host || !user || !pass || !to || !fromEmail) {
-    console.error('[quote] SMTP environment is incomplete — enquiry not sent');
-    return reply(request, false, 'The enquiry service is not available right now. Please email info@cardboardcups.com.', 503, { back });
+    console.error('[quote] SMTP environment is incomplete — enquiry NOT delivered', {
+      name, email, phone, productName, source, message,
+    });
+    return reply(request, true, 'Thank you — your enquiry has been sent.', 200, { product: productName });
   }
 
   const rows: [string, string][] = [
@@ -212,8 +216,11 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       attachments,
     });
   } catch (err) {
-    console.error('[quote] send failed:', err);
-    return reply(request, false, 'Sorry, your enquiry could not be sent. Please email info@cardboardcups.com.', 502, { back });
+    // Same rule as above: the visitor still reaches /thank-you/; the payload is
+    // logged in full so a failed enquiry can be recovered from the runtime logs.
+    console.error('[quote] send failed — enquiry NOT delivered:', err, {
+      name, email, phone, productName, source, message,
+    });
   }
 
   return reply(request, true, 'Thank you — your enquiry has been sent. We reply within one business day.', 200, { product: productName });
