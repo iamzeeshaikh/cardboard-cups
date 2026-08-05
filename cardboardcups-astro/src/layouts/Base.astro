@@ -49,5 +49,9 @@ const { title, description, path, ogImage, ogType, noindex, schema } = Astro.pro
       <slot />
     </main>
     <Footer />
+    {/* ZeeOps live chat. Loaded last and deferred so it never blocks render;
+        its origin is allow-listed in the CSP in vercel.json. Conversations land
+        in the dashboard at chat.zeeops.dev under the `cardboardcups` site. */}
+    <script src="https://chat.zeeops.dev/widget.js?siteId=cardboardcups" defer is:inline></script>
   </body>
 </html>

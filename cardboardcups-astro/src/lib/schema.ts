@@ -4,11 +4,13 @@
  * Every property here is backed by something a visitor can actually see or by a
  * documented site policy. The WordPress build emitted two competing Product
  * graphs carrying invented ratings (5/1 review from the admin account and
- * 4.3/66 reviews attributed to "Edward Langley"); neither is reproduced. There
- * is no checkout, no published price and no review system, so no Offer price,
- * aggregateRating or review is emitted at all.
+ * 4.3/66 reviews attributed to "Edward Langley"); neither is reproduced, and
+ * because the site still has no review system, no aggregateRating or review is
+ * emitted. The Offer carries the "Starting from $0.50" price shown on every
+ * product page, the free-US-shipping promise from the product copy, and the
+ * returns terms published on the Terms & Conditions page.
  */
-import { SITE_URL, SITE_NAME, CONTACT } from '../data/site';
+import { SITE_URL, SITE_NAME, CONTACT, PRICE_FROM } from '../data/site';
 
 const abs = (path: string) => new URL(path, SITE_URL).href;
 
@@ -107,16 +109,37 @@ export function product(p: ProductInput) {
     description: p.description,
     image: p.images.map((i) => abs(i.src)),
     brand: { '@type': 'Brand', name: p.brand },
-    // Quotation-only: the offer states availability and where to enquire,
-    // and deliberately carries no price, currency or delivery promise.
     offers: {
       '@type': 'Offer',
+      url: abs(p.url),
+      // The site-wide entry price rendered on every product page.
+      price: PRICE_FROM.value,
+      priceCurrency: PRICE_FROM.currency,
+      priceValidUntil: '2027-08-04',
+      itemCondition: 'https://schema.org/NewCondition',
       availability: p.inStock
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
-      availabilityStarts: undefined,
-      url: abs('/get-free-quote/'),
       seller: { '@id': `${SITE_URL}/#organization` },
+      // "Free shipping across the USA" — stated in the product descriptions.
+      shippingDetails: {
+        '@type': 'OfferShippingDetails',
+        shippingRate: {
+          '@type': 'MonetaryAmount',
+          value: 0,
+          currency: PRICE_FROM.currency,
+        },
+        shippingDestination: {
+          '@type': 'DefinedRegion',
+          addressCountry: 'US',
+        },
+      },
+      // Terms & Conditions: returns are not accepted once production begins.
+      hasMerchantReturnPolicy: {
+        '@type': 'MerchantReturnPolicy',
+        applicableCountry: 'US',
+        returnPolicyCategory: 'https://schema.org/MerchantReturnNotPermitted',
+      },
     },
   };
 }

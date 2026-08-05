@@ -38,11 +38,16 @@ export const ANNOUNCEMENT = {
 /**
  * Entry price shown on product pages. Every WooCommerce product carried the
  * same 0.50 figure, so it is a site-wide "from" price, not a per-product one.
- * Displayed as copy only — it is deliberately kept out of Product JSON-LD,
- * since a schema offer would also need shipping and returns terms the site
- * does not publish.
+ * `value`/`currency` are the machine-readable form used by Product JSON-LD;
+ * the shipping and returns terms backing the schema offer come from the
+ * product copy (free US shipping) and the Terms & Conditions returns section.
  */
-export const PRICE_FROM = { label: 'Starting from', amount: '$0.50' };
+export const PRICE_FROM = {
+  label: 'Starting from',
+  amount: '$0.50',
+  value: '0.50',
+  currency: 'USD',
+};
 
 export const LOGO = {
   src: '/wp-content/uploads/2026/01/Group-1-e1769074957770.png',
