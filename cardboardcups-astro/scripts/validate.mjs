@@ -26,6 +26,8 @@ const check = (name, ok, detail = '') =>
 async function walk(dir) {
   const out = [];
   for (const e of await readdir(dir, { withFileTypes: true })) {
+    // Skip macOS AppleDouble sidecars (._*) so they never count as pages.
+    if (e.name.startsWith('._') || e.name === '.DS_Store') continue;
     const full = path.join(dir, e.name);
     if (e.isDirectory()) out.push(...(await walk(full)));
     else if (e.name.endsWith('.html')) out.push(full);

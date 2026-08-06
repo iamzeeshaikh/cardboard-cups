@@ -18,6 +18,8 @@ const RASTER = /\.(jpe?g|png)$/i;
 async function walk(dir) {
   const out = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
+    // Skip macOS AppleDouble sidecars and Finder metadata (._*, .DS_Store).
+    if (entry.name.startsWith('._') || entry.name === '.DS_Store') continue;
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) out.push(...(await walk(full)));
     else out.push(full);

@@ -2,12 +2,12 @@
 import Base from '../../layouts/Base.astro';
 import QuoteForm from '../../components/QuoteForm.astro';
 import ProductCard from '../../components/ProductCard.astro';
-import SmartImage from '../../components/SmartImage.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import Faq from '../../components/Faq.astro';
 import CtaSection from '../../components/CtaSection.astro';
 import products from '../../data/products.json';
 import categories from '../../data/categories.json';
+import imageManifest from '../../data/images.json';
 import { CTA, PRICE_FROM } from '../../data/site';
 import { breadcrumbs, faqPage, product as productSchema } from '../../lib/schema';
 
@@ -42,7 +42,33 @@ const schema = [
   faqPage(product.faqs),
 ];
 
-const gallery = product.images;
+// Gallery images resolved against the rendition manifest so the main image and
+// its swap targets all carry intrinsic width/height and a WebP srcset.
+const manifest = imageManifest as Record<
+  string,
+  { width: number; height: number; srcset: { url: string; w: number }[] }
+>;
+const heroSizes = '(max-width: 900px) 92vw, 440px';
+const gallery = product.images.map((img, i) => {
+  const info = manifest[img.src];
+  const srcset = info?.srcset?.map((s) => `${s.url} ${s.w}w`).join(', ') ?? '';
+  // Smallest rendition for the thumbnail strip; original as the fallback.
+  const thumbRendition = info?.srcset?.[0];
+  const thumb = thumbRendition?.url ?? img.src;
+  const thumbW = thumbRendition?.w ?? info?.width;
+  const thumbH =
+    thumbRendition && info ? Math.round((thumbRendition.w * info.height) / info.width) : info?.height;
+  return {
+    src: img.src,
+    srcset,
+    alt: img.alt || `${product.name} image ${i + 1}`,
+    width: info?.width,
+    height: info?.height,
+    thumb,
+    thumbW,
+    thumbH,
+  };
+});
 const hero = gallery[0];
 const specs = product.specifications;
 ---
@@ -61,23 +87,44 @@ const specs = product.specifications;
     <div class="product__gallery">
       {
         hero && (
-          <SmartImage
+          <img
+            id="main-img"
+            class="product__hero"
             src={hero.src}
+            srcset={hero.srcset || undefined}
+            sizes={hero.srcset ? heroSizes : undefined}
             alt={hero.alt}
-            sizes="(max-width: 900px) 92vw, 440px"
+            width={hero.width}
+            height={hero.height}
             loading="eager"
             fetchpriority="high"
-            ratio="1/1"
-            class="product__hero"
+            decoding="async"
           />
         )
       }
       {
         gallery.length > 1 && (
           <ul class="product__thumbs">
-            {gallery.map((img) => (
+            {gallery.map((img, i) => (
               <li>
-                <SmartImage src={img.src} alt={img.alt} sizes="110px" ratio="1/1" />
+                <button
+                  type="button"
+                  class:list={['thumb-btn', { active: i === 0 }]}
+                  data-src={img.src}
+                  data-srcset={img.srcset || undefined}
+                  data-sizes={img.srcset ? heroSizes : undefined}
+                  data-alt={img.alt}
+                  aria-label={`View image ${i + 1}: ${img.alt}`}
+                >
+                  <img
+                    src={img.thumb}
+                    alt={img.alt}
+                    width={img.thumbW}
+                    height={img.thumbH}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </button>
               </li>
             ))}
           </ul>
@@ -194,18 +241,28 @@ const specs = product.specifications;
     padding-block: 40px;
     align-items: start;
   }
-  .product__hero :global(img) {
-    width: 100%; height: auto; display: block;
+  .product__hero {
+    width: 100%; height: auto; display: block; aspect-ratio: 1/1;
     border: 1px solid var(--card-line); border-radius: 4px; object-fit: cover;
+    background: var(--white);
   }
   .product__thumbs {
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
     margin: 10px 0 0; padding: 0; list-style: none;
   }
   .product__thumbs li { margin: 0; }
-  .product__thumbs :global(img) {
-    width: 100%; height: auto; display: block; object-fit: cover;
+  .thumb-btn {
+    display: block; width: 100%; padding: 0; margin: 0;
+    background: var(--white); cursor: pointer; overflow: hidden;
     border: 1px solid var(--card-line); border-radius: 3px;
+  }
+  .thumb-btn img {
+    width: 100%; height: auto; display: block; object-fit: cover; aspect-ratio: 1/1;
+  }
+  .thumb-btn:hover { border-color: var(--peach-text); }
+  .thumb-btn.active {
+    border-color: var(--peach-text);
+    outline: 2px solid var(--peach-text); outline-offset: -2px;
   }
 
   .product__summary h1 { font-size: 30px; }
@@ -277,6 +334,51 @@ const specs = product.specifications;
 </style>
 
 <script>
+  // Product gallery: clicking a thumbnail swaps the main image in place.
+  // Every gallery image is pre-warmed so the swap is instant.
+  const mainImg = document.getElementById('main-img') as HTMLImageElement | null;
+  const thumbBtns = [...document.querySelectorAll<HTMLButtonElement>('.thumb-btn')];
+  if (mainImg && thumbBtns.length > 0) {
+    const warmed = new Set<string>();
+    const warm = (btn: HTMLButtonElement) => {
+      const src = btn.dataset.src;
+      if (!src || warmed.has(src)) return;
+      warmed.add(src);
+      const img = new Image();
+      img.fetchPriority = 'low';
+      img.decoding = 'async';
+      if (btn.dataset.srcset) {
+        img.sizes = btn.dataset.sizes || '';
+        img.srcset = btn.dataset.srcset;
+      }
+      img.src = src;
+    };
+
+    thumbBtns.forEach((btn) => {
+      btn.addEventListener('pointerenter', () => warm(btn));
+      btn.addEventListener('touchstart', () => warm(btn), { passive: true });
+      btn.addEventListener('click', () => {
+        if (!btn.dataset.src) return;
+        thumbBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        // srcset first, then src, so the browser never resolves a stale pair.
+        if (btn.dataset.sizes) mainImg.sizes = btn.dataset.sizes;
+        mainImg.srcset = btn.dataset.srcset || '';
+        mainImg.src = btn.dataset.src;
+        if (btn.dataset.alt) mainImg.alt = btn.dataset.alt;
+      });
+    });
+
+    const warmAll = () => thumbBtns.forEach(warm);
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(warmAll, { timeout: 3000 });
+    } else if (document.readyState === 'complete') {
+      setTimeout(warmAll, 500);
+    } else {
+      window.addEventListener('load', () => setTimeout(warmAll, 500), { once: true });
+    }
+  }
+
   document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
     const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
     if (tabs.length < 2) return;

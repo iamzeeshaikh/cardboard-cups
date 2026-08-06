@@ -5,6 +5,13 @@ import manifest from '../data/images.json';
 
 const sizes = manifest as Record<string, { width: number; height: number }>;
 const pay = sizes[FOOTER.paymentImage];
+
+/** Descriptive alt derived from the upload's filename, e.g. "Sweet Treat Baking Cups". */
+const galleryAlt = (src: string) =>
+  decodeURIComponent(src.split('/').pop() ?? '')
+    .replace(/\.[a-z0-9]+$/i, '')
+    .replace(/[-_]+/g, ' ')
+    .trim();
 ---
 
 <footer class="footer">
@@ -64,7 +71,7 @@ const pay = sizes[FOOTER.paymentImage];
       {
         FOOTER.gallery.map((src) => (
           <li>
-            <SmartImage src={src} alt="" sizes="120px" ratio="1/1" class="footer__thumb" />
+            <SmartImage src={src} alt={galleryAlt(src)} sizes="120px" ratio="1/1" class="footer__thumb" />
           </li>
         ))
       }
