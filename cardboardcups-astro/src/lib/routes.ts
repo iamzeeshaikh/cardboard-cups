@@ -16,6 +16,19 @@ export const STATIC_PAGES = [
 ];
 
 /**
+ * Blog listing plus one URL per markdown file in src/data/blog/. Kept as a
+ * static list (not a glob) because this module is imported by astro.config.
+ */
+export const BLOG_PAGES = [
+  '/blog/',
+  '/blog/what-is-the-cardboard-sleeve-on-a-coffee-cup-called/',
+  '/blog/cardboard-cup-sizes-and-uses/',
+  '/blog/how-to-order-custom-printed-cups-wholesale/',
+  '/blog/cardboard-cups-with-lids-for-takeaway-service/',
+  '/blog/single-wall-and-corrugated-cardboard-cups-compared/',
+];
+
+/**
  * Real pages that must return 200 but must never be indexed or listed in the
  * sitemap: the error page and the post-submission confirmation.
  */
@@ -23,6 +36,7 @@ export const NOINDEX_PAGES = ['/404/', '/thank-you/'];
 
 export const INDEXABLE: string[] = [
   ...STATIC_PAGES,
+  ...BLOG_PAGES,
   ...categories.map((c) => c.url),
   ...products.map((p) => p.url),
 ];

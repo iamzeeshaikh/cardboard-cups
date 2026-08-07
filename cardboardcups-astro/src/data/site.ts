@@ -101,6 +101,7 @@ export const NAV: NavItem[] = [
       { label: 'Cardboard Cup Sleeves', href: '/product/cardboard-cup-sleeves/' },
     ],
   },
+  { label: 'Blog', href: '/blog/' },
   { label: 'Contact Us', href: '/contact-us/' },
 ];
 
@@ -115,6 +116,7 @@ export const FOOTER = {
   ],
   company: [
     { label: 'About Us', href: '/about-us/' },
+    { label: 'Blog', href: '/blog/' },
     { label: 'Contact Us', href: '/contact-us/' },
     { label: 'Terms Conditions', href: '/terms-conditions/' },
     { label: 'Privacy Policy', href: '/privacy-policy/' },

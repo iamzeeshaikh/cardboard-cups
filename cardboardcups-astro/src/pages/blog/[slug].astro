@@ -1,0 +1,106 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import SmartImage from '../../components/SmartImage.astro';
+import CtaSection from '../../components/CtaSection.astro';
+import { breadcrumbs } from '../../lib/schema';
+import { BLOG_POSTS } from '../../lib/blog';
+
+export function getStaticPaths() {
+  return BLOG_POSTS.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = post;
+
+const crumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Blog', href: '/blog/' },
+  { label: post.title },
+];
+
+const published = new Date(post.date + 'T12:00:00Z').toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+---
+<Base
+  title={post.metaTitle}
+  description={post.metaDescription}
+  path={post.url}
+  ogImage={post.image}
+  ogType="article"
+  schema={[breadcrumbs(crumbs)]}
+>
+  <Breadcrumbs items={crumbs} />
+
+  <article class="section">
+    <div class="container post">
+      <p class="post__date">Published {published}</p>
+      <SmartImage
+        src={post.image}
+        alt={post.imageAlt}
+        sizes="(max-width: 900px) 92vw, 820px"
+        loading="eager"
+        fetchpriority="high"
+        class="post__hero"
+      />
+      <div class="post__body">
+        <Content />
+      </div>
+    </div>
+  </article>
+
+  <CtaSection />
+</Base>
+
+<style>
+  .post {
+    max-width: 860px;
+  }
+  .post__date {
+    font-size: 0.85rem;
+    color: #8a7563;
+    margin: 0 0 1rem;
+  }
+  .post :global(.post__hero img) {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+  }
+  .post__body {
+    margin-top: 1.75rem;
+  }
+  .post__body :global(h1) {
+    font-size: 1.9rem;
+    line-height: 1.25;
+    margin: 0 0 1rem;
+  }
+  .post__body :global(h2) {
+    font-size: 1.35rem;
+    margin: 2rem 0 0.75rem;
+  }
+  .post__body :global(h3) {
+    font-size: 1.1rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .post__body :global(p) {
+    margin: 0 0 1rem;
+    line-height: 1.7;
+  }
+  .post__body :global(ul),
+  .post__body :global(ol) {
+    margin: 0 0 1rem;
+    padding-left: 1.4rem;
+  }
+  .post__body :global(li) {
+    margin-bottom: 0.4rem;
+    line-height: 1.6;
+  }
+  .post__body :global(a) {
+    color: #b0703c;
+    text-decoration: underline;
+  }
+</style>
