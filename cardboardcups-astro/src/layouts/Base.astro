@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import '../styles/global.css';
 
 import WhatsAppButton from '../components/WhatsAppButton.astro';
+import { organization, website } from '../lib/schema';
 interface Props {
   title: string;
   description: string;
@@ -16,6 +17,12 @@ interface Props {
 }
 
 const { title, description, path, ogImage, ogType, noindex, schema } = Astro.props;
+
+/* Organization and WebSite are emitted here rather than per page so the
+   `#organization` / `#website` nodes that Product, BlogPosting and
+   CollectionPage reference by @id actually resolve on every route. Pages pass
+   only their own page-specific graphs. */
+const graphs = [organization(), website(), ...(schema ?? [])];
 ---
 
 <!doctype html>
@@ -30,7 +37,7 @@ const { title, description, path, ogImage, ogType, noindex, schema } = Astro.pro
       ogImage={ogImage}
       ogType={ogType}
       noindex={noindex}
-      schema={schema}
+      schema={graphs}
     />
     {/* Favicons rendered down from the 512px master; the master itself was
         being fetched at High priority and cost 40KB ahead of the hero. */}

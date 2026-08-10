@@ -9,7 +9,7 @@ import products from '../../data/products.json';
 import categories from '../../data/categories.json';
 import { HOME_FAQ } from '../../data/home';
 import { CTA } from '../../data/site';
-import { breadcrumbs, itemList, faqPage } from '../../lib/schema';
+import { breadcrumbs, collectionPage, faqPage } from '../../lib/schema';
 
 export function getStaticPaths() {
   return categories.map((c) => ({ params: { slug: c.slug }, props: { category: c } }));
@@ -27,7 +27,12 @@ const crumbs = [{ label: 'Home', href: '/' }, { label: category.name }];
 
 const schema = [
   breadcrumbs(crumbs),
-  itemList(category.name, items.map((p) => ({ name: p.name, url: p.url }))),
+  collectionPage({
+    name: category.name,
+    url: category.url,
+    description: category.seo.description ?? '',
+    items: items.map((p) => ({ name: p.name, url: p.url })),
+  }),
   faqPage(HOME_FAQ.items),
 ];
 ---

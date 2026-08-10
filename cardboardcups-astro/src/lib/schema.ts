@@ -158,3 +158,69 @@ export function itemList(name: string, items: { name: string; url: string }[]) {
     })),
   };
 }
+
+/**
+ * Category pages are a listing of products, so the page itself is a
+ * CollectionPage whose mainEntity is the ItemList built above. Emitting both
+ * lets Google tie the list to the page instead of treating it as a floating
+ * list with no owner.
+ */
+export function collectionPage(input: {
+  name: string;
+  url: string;
+  description: string;
+  items: { name: string; url: string }[];
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': `${abs(input.url)}#collection`,
+    name: input.name,
+    url: abs(input.url),
+    description: input.description,
+    isPartOf: { '@id': `${SITE_URL}/#website` },
+    mainEntity: {
+      '@type': 'ItemList',
+      name: input.name,
+      numberOfItems: input.items.length,
+      itemListElement: input.items.map((it, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: it.name,
+        url: abs(it.url),
+      })),
+    },
+  };
+}
+
+/**
+ * Article schema for the blog. Every field maps to something rendered on the
+ * post: headline and description from the frontmatter, image from the hero,
+ * date from the published line. The site has no per-author bylines, so the
+ * organisation is both author and publisher.
+ */
+export function blogPosting(post: {
+  title: string;
+  description: string;
+  url: string;
+  image: string;
+  date: string;
+}) {
+  const published = `${post.date}T12:00:00Z`;
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    '@id': `${abs(post.url)}#article`,
+    headline: post.title,
+    description: post.description,
+    url: abs(post.url),
+    image: abs(post.image),
+    datePublished: published,
+    dateModified: published,
+    inLanguage: 'en-US',
+    author: { '@id': `${SITE_URL}/#organization` },
+    publisher: { '@id': `${SITE_URL}/#organization` },
+    isPartOf: { '@id': `${SITE_URL}/#website` },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': abs(post.url) },
+  };
+}

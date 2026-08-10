@@ -11,12 +11,13 @@ import {
   HERO, INTRO, BENEFITS, RANGE, CATEGORIES_SECTION, AUDIENCE,
   PRINTING, SHIPPING, SUSTAINABILITY, BULK, HOME_FAQ, BANDS_BACKGROUND,
 } from '../data/home';
-import { organization, website, faqPage } from '../lib/schema';
+import { faqPage } from '../lib/schema';
 
 const bySlug = new Map(products.map((p) => [p.slug, p]));
 const rangeItems = RANGE.slugs.map((s) => bySlug.get(s)!).filter(Boolean);
 
-const schema = [organization(), website(), faqPage(HOME_FAQ.items)];
+// Organization and WebSite come from Base.astro on every route.
+const schema = [faqPage(HOME_FAQ.items)];
 ---
 
 <Base
