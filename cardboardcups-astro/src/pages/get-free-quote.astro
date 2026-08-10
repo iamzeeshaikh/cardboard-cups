@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import QuoteForm from '../components/QuoteForm.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { CONTACT } from '../data/site';
-import { breadcrumbs } from '../lib/schema';
+import { breadcrumbs, webPage } from '../lib/schema';
 
 const crumbs = [{ label: 'Home', href: '/' }, { label: 'Get Free Quote' }];
 // Product can be pre-selected from a product page link; rendered server-side is
@@ -14,7 +14,7 @@ const crumbs = [{ label: 'Home', href: '/' }, { label: 'Get Free Quote' }];
   description="Request a free quote for custom printed cardboard cups, sleeves and baking cups. Tell us your size, quantity and print requirements and we reply within 24 hours."
   path="/get-free-quote/"
   ogType="article"
-  schema={[breadcrumbs(crumbs)]}
+  schema={[breadcrumbs(crumbs), webPage({ path: '/get-free-quote/', name: 'Get Free Quote - Cardboard Cups', description: 'Request a free quote for custom printed cardboard cups, sleeves and baking cups. Tell us your size, quantity and print requirements and we reply within 24 hours.' })]}
 >
   <Breadcrumbs items={crumbs} />
 

@@ -5,7 +5,7 @@ import Breadcrumbs from '../components/Breadcrumbs.astro';
 import CtaSection from '../components/CtaSection.astro';
 import products from '../data/products.json';
 import categories from '../data/categories.json';
-import { breadcrumbs, itemList } from '../lib/schema';
+import { breadcrumbs, collectionPage } from '../lib/schema';
 
 const crumbs = [{ label: 'Home', href: '/' }, { label: 'Shop' }];
 const byCategory = categories.map((c) => ({
@@ -20,7 +20,15 @@ const byCategory = categories.map((c) => ({
   description="Browse the full Cardboard Cups range — cup types, cup sleeves and baking cups. Custom printing, bulk quantities and free quotes on every product."
   path="/shop/"
   ogImage={products[0]?.images[0]?.src}
-  schema={[breadcrumbs(crumbs), itemList('All products', products.map((p) => ({ name: p.name, url: p.url })))]}
+  schema={[
+    breadcrumbs(crumbs),
+    collectionPage({
+      name: 'Shop',
+      url: '/shop/',
+      description: 'Browse the full Cardboard Cups range — cup types, cup sleeves and baking cups.',
+      items: products.map((p) => ({ name: p.name, url: p.url })),
+    }),
+  ]}
 >
   <Breadcrumbs items={crumbs} />
 

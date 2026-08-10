@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import policies from '../data/policies.json';
-import { breadcrumbs } from '../lib/schema';
+import { breadcrumbs, webPage } from '../lib/schema';
 
 const page = policies['privacy-policy'];
 const crumbs = [{ label: 'Home', href: '/' }, { label: 'Privacy Policy' }];
@@ -12,7 +12,7 @@ const crumbs = [{ label: 'Home', href: '/' }, { label: 'Privacy Policy' }];
   description="How Cardboard Cups collects, uses, protects and shares information when you visit our website or contact us for a quote."
   path="/privacy-policy/"
   ogType="article"
-  schema={[breadcrumbs(crumbs)]}
+  schema={[breadcrumbs(crumbs), webPage({ path: '/privacy-policy/', name: 'Privacy Policy - Cardboard Cups', description: 'How Cardboard Cups collects, uses, protects and shares information when you visit our website or contact us for a quote.' })]}
 >
   <Breadcrumbs items={crumbs} />
   <article class="section">

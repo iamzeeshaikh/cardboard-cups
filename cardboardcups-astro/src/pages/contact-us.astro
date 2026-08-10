@@ -4,7 +4,7 @@ import QuoteForm from '../components/QuoteForm.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import CtaSection from '../components/CtaSection.astro';
 import { CONTACT } from '../data/site';
-import { breadcrumbs, organization } from '../lib/schema';
+import { breadcrumbs, webPage } from '../lib/schema';
 
 const crumbs = [{ label: 'Home', href: '/' }, { label: 'Contact Us' }];
 ---
@@ -13,7 +13,7 @@ const crumbs = [{ label: 'Home', href: '/' }, { label: 'Contact Us' }];
   description="Contact Cardboard Cups for custom quotes, bulk pricing and product advice. Call (503) 358-0443 or email info@cardboardcups.com — we reply within 24 hours."
   path="/contact-us/"
   ogType="article"
-  schema={[organization(), breadcrumbs(crumbs)]}
+  schema={[breadcrumbs(crumbs), webPage({ path: '/contact-us/', name: 'Contact Us - Cardboard Cups', description: 'Contact Cardboard Cups for custom quotes, bulk pricing and product advice. Call (503) 358-0443 or email info@cardboardcups.com — we reply within 24 hours.', type: 'ContactPage' })]}
 >
   <Breadcrumbs items={crumbs} />
 

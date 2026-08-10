@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import SmartImage from '../../components/SmartImage.astro';
 import CtaSection from '../../components/CtaSection.astro';
-import { breadcrumbs } from '../../lib/schema';
+import { breadcrumbs, collectionPage } from '../../lib/schema';
 import { BLOG_POSTS } from '../../lib/blog';
 
 const crumbs = [{ label: 'Home', href: '/' }, { label: 'Blog' }];
@@ -21,7 +21,15 @@ const fmt = (iso: string) =>
   description="Guides on cardboard cup sizes, sleeves, lids, printing and wholesale ordering, written for cafes, food brands and distributors."
   path="/blog/"
   ogType="website"
-  schema={[breadcrumbs(crumbs)]}
+  schema={[
+    breadcrumbs(crumbs),
+    collectionPage({
+      name: 'Cardboard Cups Blog',
+      url: '/blog/',
+      description: 'Guides on cardboard cup sizes, sleeves, lids, printing and wholesale ordering.',
+      items: BLOG_POSTS.map((p) => ({ name: p.title, url: p.url })),
+    }),
+  ]}
 >
   <Breadcrumbs items={crumbs} />
 

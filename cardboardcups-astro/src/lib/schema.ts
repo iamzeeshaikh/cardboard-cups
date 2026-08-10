@@ -160,6 +160,30 @@ export function itemList(name: string, items: { name: string; url: string }[]) {
 }
 
 /**
+ * Generic page node. Content pages carried only a BreadcrumbList, so nothing
+ * tied the URL to the site or the business. `type` narrows it where
+ * schema.org has a better fit than plain WebPage.
+ */
+export function webPage(input: {
+  path: string;
+  name: string;
+  description: string;
+  type?: 'WebPage' | 'AboutPage' | 'ContactPage';
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': input.type ?? 'WebPage',
+    '@id': `${abs(input.path)}#webpage`,
+    url: abs(input.path),
+    name: input.name,
+    description: input.description,
+    isPartOf: { '@id': `${SITE_URL}/#website` },
+    about: { '@id': `${SITE_URL}/#organization` },
+    inLanguage: 'en-US',
+  };
+}
+
+/**
  * Category pages are a listing of products, so the page itself is a
  * CollectionPage whose mainEntity is the ItemList built above. Emitting both
  * lets Google tie the list to the page instead of treating it as a floating

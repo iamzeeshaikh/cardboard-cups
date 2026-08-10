@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import policies from '../data/policies.json';
-import { breadcrumbs } from '../lib/schema';
+import { breadcrumbs, webPage } from '../lib/schema';
 
 const page = policies['terms-conditions'];
 const crumbs = [{ label: 'Home', href: '/' }, { label: 'Terms Conditions' }];
@@ -12,7 +12,7 @@ const crumbs = [{ label: 'Home', href: '/' }, { label: 'Terms Conditions' }];
   description="The terms and conditions covering website use, quotations, custom orders, shipping, returns and liability when ordering from Cardboard Cups."
   path="/terms-conditions/"
   ogType="article"
-  schema={[breadcrumbs(crumbs)]}
+  schema={[breadcrumbs(crumbs), webPage({ path: '/terms-conditions/', name: 'Terms Conditions - Cardboard Cups', description: 'The terms and conditions covering website use, quotations, custom orders, shipping, returns and liability when ordering from Cardboard Cups.' })]}
 >
   <Breadcrumbs items={crumbs} />
   <article class="section">

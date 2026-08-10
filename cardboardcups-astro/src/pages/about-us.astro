@@ -4,7 +4,7 @@ import SmartImage from '../components/SmartImage.astro';
 import CtaSection from '../components/CtaSection.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { PRINTING, SHIPPING } from '../data/home';
-import { breadcrumbs } from '../lib/schema';
+import { breadcrumbs, webPage } from '../lib/schema';
 
 const crumbs = [{ label: 'Home', href: '/' }, { label: 'About Us' }];
 ---
@@ -14,7 +14,7 @@ const crumbs = [{ label: 'Home', href: '/' }, { label: 'About Us' }];
   path="/about-us/"
   ogImage="/wp-content/uploads/2025/12/Tea-Serving-Cups.jpg"
   ogType="article"
-  schema={[breadcrumbs(crumbs)]}
+  schema={[breadcrumbs(crumbs), webPage({ path: '/about-us/', name: 'About Us - Cardboard Cups', description: 'Cardboard Cups supplies durable, sustainable cardboard cups to cafés, food brands, offices, events and distributors across the USA, UK, Canada, Australia and Europe.', type: 'AboutPage' })]}
 >
   <Breadcrumbs items={crumbs} />
 
