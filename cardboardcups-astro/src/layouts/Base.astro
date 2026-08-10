@@ -61,27 +61,11 @@ const graphs = [organization(), website(), ...(schema ?? [])];
       <slot />
     </main>
     <Footer />
-    {/* ZeeOps live chat. The widget and its site-config request used to run on
-        every page load; they now wait for the visitor's first interaction, or
-        6s after load for visitors who never interact, so they never compete
-        with the page's own LCP. Bundled rather than inline so the strict CSP
-        (script-src 'self' + chat.zeeops.dev) still covers it. Conversations
-        land in the dashboard at chat.zeeops.dev under the `cardboardcups` site. */}
-    <script>
-      const events = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
-      let loaded = false;
-      const load = () => {
-        if (loaded) return;
-        loaded = true;
-        for (const ev of events) window.removeEventListener(ev, load);
-        const s = document.createElement('script');
-        s.src = 'https://chat.zeeops.dev/widget.js?siteId=cardboardcups';
-        s.async = true;
-        document.body.appendChild(s);
-      };
-      for (const ev of events) window.addEventListener(ev, load, { passive: true, once: true });
-      addEventListener('load', () => setTimeout(load, 6000));
-    </script>
+    {/* ZeeOps live chat, deferred to the first interaction (or 6s after load)
+        so its 23KB and its site-config request never compete with the page's
+        own LCP. See public/chat-loader.js. Conversations land in the dashboard
+        at chat.zeeops.dev under the `cardboardcups` site. */}
+    <script src="/chat-loader.js" defer></script>
       <WhatsAppButton />
   </body>
 </html>
