@@ -26,6 +26,26 @@ const schema = [organization(), website(), faqPage(HOME_FAQ.items)];
   ogImage="/wp-content/uploads/2025/12/Sweet-Treat-Baking-Cups.jpg"
   schema={schema}
 >
+  {/* A CSS background is only discovered once the stylesheet has parsed, which
+      left the LCP image starting ~370ms late. Preloaded per breakpoint to
+      match the .hero rules in the style block below. */}
+  <Fragment slot="head">
+    <link
+      rel="preload"
+      as="image"
+      href="/wp-content/uploads/2025/12/Carry-Safe-White-Cups-640w.webp"
+      media="(max-width: 767px)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      href="/wp-content/uploads/2025/12/Carry-Safe-White-Cups-960w.webp"
+      media="(min-width: 768px)"
+      fetchpriority="high"
+    />
+  </Fragment>
+
   <section class="hero">
     <div class="container hero__inner">
       <div class="hero__copy">
@@ -219,11 +239,20 @@ const schema = [organization(), website(), faqPage(HOME_FAQ.items)];
     position: relative;
     color: var(--white);
     background-color: #4a4038;
-    /* 87deg black -> grey overlay at 75%, matching the Elementor hero */
+    /* 87deg black -> grey overlay at 75%, matching the Elementor hero.
+       The photo is the LCP resource, so it comes from the WebP renditions
+       rather than the 462KB JPG master — 43KB on phones, 68KB above that.
+       Kept in sync with the preload links in the head slot below. */
     background-image: linear-gradient(87deg, rgb(10 10 10 / 75%) 43%, rgb(116 116 116 / 75%) 70%),
-      url('/wp-content/uploads/2025/12/Carry-Safe-White-Cups.jpg');
+      url('/wp-content/uploads/2025/12/Carry-Safe-White-Cups-640w.webp');
     background-size: cover;
     background-position: center;
+  }
+  @media (min-width: 768px) {
+    .hero {
+      background-image: linear-gradient(87deg, rgb(10 10 10 / 75%) 43%, rgb(116 116 116 / 75%) 70%),
+        url('/wp-content/uploads/2025/12/Carry-Safe-White-Cups-960w.webp');
+    }
   }
   .hero__inner {
     display: grid;

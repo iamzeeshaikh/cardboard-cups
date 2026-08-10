@@ -138,7 +138,8 @@ export const BULK = {
   cta: { label: 'Get Wholesale Pricing', href: '/get-free-quote/' },
 };
 
-export const BANDS_BACKGROUND = '/wp-content/uploads/2025/12/paperboard-coffee-cup.jpg';
+/* WebP rendition, not the 260KB JPG master — this band is a scrimmed backdrop. */
+export const BANDS_BACKGROUND = '/wp-content/uploads/2025/12/paperboard-coffee-cup-960w.webp';
 
 export const HOME_FAQ = {
   h2: 'Frequently Asked Questions',

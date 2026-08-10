@@ -16,9 +16,17 @@ import { CTA } from '../data/site';
   .cta {
     position: relative; padding-block: 76px; text-align: center; color: var(--white);
     background-color: #2f2b28;
+    /* WebP renditions rather than the 277KB JPG master: this band sits behind
+       a 55% scrim, so 12KB on phones and 19KB above that is indistinguishable. */
     background-image: linear-gradient(rgb(0 0 0 / 55%), rgb(0 0 0 / 55%)),
-      url('/wp-content/uploads/2025/12/double-layer-coffee-cup.jpg');
+      url('/wp-content/uploads/2025/12/double-layer-coffee-cup-640w.webp');
     background-size: cover; background-position: center;
+  }
+  @media (min-width: 768px) {
+    .cta {
+      background-image: linear-gradient(rgb(0 0 0 / 55%), rgb(0 0 0 / 55%)),
+        url('/wp-content/uploads/2025/12/double-layer-coffee-cup-960w.webp');
+    }
   }
   .cta h2 { color: var(--white); margin-bottom: 12px; }
   .cta p { max-width: 60ch; margin-inline: auto; }
