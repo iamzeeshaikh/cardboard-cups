@@ -126,8 +126,8 @@ To revert, set `--peach-text: var(--peach)` and restore `color: var(--white)` on
 
 * Cloudflare had obfuscated every email address into `[email protected]`
   placeholders; all were decoded back to `info@cardboardcups.com`.
-* `tel:` links carried display formatting (`tel:(503) 358-0443`) and are now
-  dialable (`tel:+15033580443`).
+* `tel:` links carried display formatting (`tel:(503) 461-4788`) and are now
+  dialable (`tel:+15034614788`).
 * The announcement bar's "Christmas Collection" link pointed at `href="#"`. It
   now points to `/product/christmas-cardboard-cups/`.
 * Product descriptions contained AI-drafting-tool wrapper markup

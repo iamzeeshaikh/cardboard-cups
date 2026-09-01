@@ -7,8 +7,8 @@ export const SITE_URL = 'https://cardboardcups.com';
 export const SITE_NAME = 'Cardboard Cups';
 
 export const CONTACT = {
-  phone: '(503) 358-0443',
-  phoneHref: 'tel:+15033580443',
+  phone: '(503) 461-4788',
+  phoneHref: 'tel:+15034614788',
   email: 'info@cardboardcups.com',
   address: {
     street: '303 W 137th Street, #5A',
